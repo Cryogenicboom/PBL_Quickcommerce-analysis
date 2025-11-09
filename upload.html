@@ -7,24 +7,172 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Makes nav-container take full width and align items */
+        .nav-container {
+            width: 100%;
+            max-width: 1200px; /* You can adjust this */
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Re-style existing nav links to work with flex */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            margin-left: 2rem; /* Spacing between logo and links */
+        }
+
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+
+        .nav-spacer {
+            flex-grow: 1; /* Pushes profile menu to the right */
+        }
+
+        /* --- Profile Dropdown Styles --- */
+        .navbar-profile-container {
+            position: relative; /* Anchor for the dropdown */
+        }
+        
+        /* Icon button style */
+        .navbar-profile-icon-btn {
+            display: flex; /* 'display: none;' is set inline, JS changes it */
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: none;
+            border-radius: 50%; /* Make it round */
+            width: 44px;  /* Set fixed size */
+            height: 44px; /* Set fixed size */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .navbar-profile-icon-btn svg {
+            width: 48px; /* Size the icon */
+            height: 48px;
+            color: var(--text-secondary, #6b7280); /* Icon color */
+        }
+
+        .navbar-profile-icon-btn:hover {
+            background-color: var(--bg-secondary, #dee2e6); /* Hover effect */
+        }
+
+        /* Dropdown container */
+        .navbar-dropdown {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 100%; 
+            right: 0;
+            margin-top: 0.5rem; 
+            background-color: var(--bg-primary, #ffffff);
+            border: 1px solid var(--border-light, #e5e7eb);
+            border-radius: 0.5rem; 
+            box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+            width: 220px; /* Made wider for email */
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .navbar-dropdown.show {
+            display: block; /* Show the dropdown */
+        }
+        
+        /* Dropdown Header for email */
+        .dropdown-header {
+            padding: 0.75rem 1rem;
+            line-height: 1.4;
+        }
+        .dropdown-header-label {
+            font-size: 0.75rem; /* 12px */
+            font-weight: 500;
+            color: var(--text-secondary, #6b7280);
+        }
+        .dropdown-header-email {
+            font-size: 0.875rem; /* 14px */
+            font-weight: 600;
+            color: var(--text-primary, #1f2937);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Divider */
+        .dropdown-divider {
+            height: 1px;
+            background-color: var(--border-light, #e5e7eb);
+            margin: 0.25rem 0;
+        }
+
+        /* Dropdown items (links or buttons) */
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem; 
+            font-size: 0.875rem; 
+            color: var(--text-primary, #1f2937);
+            text-decoration: none;
+            transition: background-color 0.2s;
+            text-align: left;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f9fafb;
+        }
+        .dropdown-item-btn {
+            color: var(--danger-color, #ef4444);
+            font-weight: 500;
+        }
+        .dropdown-item-btn:hover {
+            background-color: #fef2f2;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">
-                <span class="logo-icon">📊</span>
+            <a href="index.html" class="logo"> <span class="logo-icon">📊</span>
                 <span class="logo-text">DIGIPINE</span>
                 <span class="logo-tagline">Market Intelligence</span>
-            </div>
+            </a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="dashboard.html">Analytics</a></li>
                 <li><a href="upload.html" class="active">Data Integration</a></li>
             </ul>
+
+            <div class="nav-spacer"></div>
+
+            <div class="navbar-profile-container">
+                <button id="navbar-profile-btn" class="navbar-profile-icon-btn" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div id="navbar-profile-dropdown" class="navbar-dropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-label">Signed in as</div>
+                        <div class="dropdown-header-email" id="navbar-profile-email">...</div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button id="navbar-logout-btn" class="dropdown-item dropdown-item-btn">
+                        Log Out
+                    </button>
+                </div>
+            </div>
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <section class="upload-hero">
         <div class="container">
             <div class="hero-content">
@@ -48,7 +196,6 @@
         </div>
     </section>
 
-    <!-- Upload Section -->
     <section class="upload-section">
         <div class="container">
             <div class="upload-container" id="uploadFormContainer">
@@ -57,7 +204,6 @@
                     <p>Support for multiple formats: CSV, JSON, Excel files</p>
                 </div>
 
-                <!-- Data Type Selector -->
                 <div class="data-type-selector">
                     <button class="data-type-btn active" data-type="sales">
                         <span class="btn-icon">💰</span>
@@ -76,7 +222,6 @@
                     </button>
                 </div>
 
-                <!-- Upload Area -->
                 <div class="upload-area" id="uploadArea">
                     <div class="upload-content">
                         <div class="upload-icon">📁</div>
@@ -96,7 +241,6 @@
 
                 <div class="selected-file" id="selectedFile"></div>
 
-                <!-- Sample Data Section -->
                 <div class="sample-data-section">
                     <h4>Want to try first? Use our sample data:</h4>
                     <div class="sample-buttons">
@@ -123,7 +267,6 @@
                 <div class="result-message" id="resultMessage"></div>
             </div>
 
-            <!-- Results Section (Hidden Initially) -->
             <div class="upload-results" id="uploadResults" style="display: none;">
                 <div class="results-header">
                     <div class="success-icon">✅</div>
@@ -132,7 +275,6 @@
                 </div>
 
                 <div class="results-content">
-                    <!-- Processing Summary -->
                     <div class="summary-cards">
                         <div class="summary-card">
                             <div class="summary-icon">📦</div>
@@ -156,7 +298,6 @@
                         </div>
                     </div>
 
-                    <!-- Analytics Preview -->
                     <div class="analytics-preview">
                         <div class="preview-section">
                             <h3>📈 Order Trends</h3>
@@ -173,15 +314,12 @@
                         </div>
                     </div>
 
-                    <!-- AI-Generated Insights -->
                     <div class="insights-section">
                         <h3>🤖 AI-Generated Insights</h3>
                         <div class="insights-list">
-                            <!-- Insights will be dynamically generated -->
-                        </div>
+                            </div>
                     </div>
 
-                    <!-- Action Buttons -->
                     <div class="results-actions">
                         <button class="action-btn primary-btn" onclick="window.location.href='dashboard.html'">
                             View Full Dashboard
@@ -195,96 +333,7 @@
         </div>
     </section>
 
-    <style>
-        /* Enhanced CSS for the new upload system */
-        .chart-container {
-            height: 300px;
-            position: relative;
-        }
-
-        .analytics-preview {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-            gap: 2rem;
-            margin: 2rem 0;
-        }
-
-        .preview-section {
-            background: var(--bg-secondary, #f8fafc);
-            padding: 1.5rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-light, #e2e8f0);
-        }
-
-        .insights-section {
-            background: var(--bg-secondary, #f8fafc);
-            padding: 2rem;
-            border-radius: 12px;
-            border: 1px solid var(--border-light, #e2e8f0);
-            margin: 2rem 0;
-        }
-
-        .insights-section h3 {
-            margin-bottom: 1.5rem;
-            color: var(--text-primary, #1e293b);
-        }
-
-        .results-actions {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-            margin-top: 2rem;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            padding: 1rem 2rem;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .primary-btn {
-            background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-            color: white;
-        }
-
-        .secondary-btn {
-            background: #f8fafc;
-            color: #64748b;
-            border: 1px solid #e2e8f0;
-        }
-
-        .action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            .analytics-preview {
-                grid-template-columns: 1fr;
-            }
-            
-            .results-actions {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .action-btn {
-                width: 100%;
-                max-width: 300px;
-            }
-        }
-    </style>
-
-    <script src="upload_new.js"></script>
-    <script>
+    <script src="upload_new.js"></script> <script>
         // Smooth page transitions
         document.querySelectorAll('a[href]').forEach(link => {
             link.addEventListener('click', function(e) {
@@ -302,6 +351,7 @@
             });
         });
     </script>
+
+    <script type="module" src="auth/auth-check.js"></script>
 </body>
 </html>
-

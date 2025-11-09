@@ -8,26 +8,182 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+    <style>
+        /* Makes nav-container take full width and align items */
+        .nav-container {
+            width: 100%;
+            max-width: 1200px; /* You can adjust this */
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Re-style existing nav links to work with flex */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            margin-left: 2rem; /* Spacing between logo and links */
+        }
+
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+
+        .nav-spacer {
+            flex-grow: 1; /* Pushes profile menu to the right */
+        }
+
+        /* --- Profile Dropdown Styles --- */
+        .navbar-profile-container {
+            position: relative; /* Anchor for the dropdown */
+        }
+        
+        /* NEW: Icon button style */
+        .navbar-profile-icon-btn {
+            display: flex; 
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: none;
+            border-radius: 50%;
+            width: 44px;  /* <-- Made it bigger */
+            height: 44px; /* <-- Made it bigger */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .navbar-profile-icon-btn svg {
+            width: 48px; /* <-- Made the icon bigger */
+            height: 48px; /* <-- Made the icon bigger */
+            color: var(--text-secondary, #6b7280); /* Icon color */
+        }
+
+        .navbar-profile-icon-btn:hover {
+            background-color: var(--bg-secondary, #dee2e6); /* Hover effect */
+        }
+
+        /* Dropdown container */
+        .navbar-dropdown {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 100%; 
+            right: 0;
+            margin-top: 0.5rem; 
+            background-color: var(--bg-primary, #ffffff);
+            border: 1px solid var(--border-light, #e5e7eb);
+            border-radius: 0.5rem; 
+            box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+            width: 220px; /* Made wider for email */
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .navbar-dropdown.show {
+            display: block; /* Show the dropdown */
+        }
+        
+        /* NEW: Dropdown Header for email */
+        .dropdown-header {
+            padding: 0.75rem 1rem;
+            line-height: 1.4;
+        }
+        .dropdown-header-label {
+            font-size: 0.75rem; /* 12px */
+            font-weight: 500;
+            color: var(--text-secondary, #6b7280);
+        }
+        .dropdown-header-email {
+            font-size: 0.875rem; /* 14px */
+            font-weight: 600;
+            color: var(--text-primary, #1f2937);
+            /* Handle long emails */
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* NEW: Divider */
+        .dropdown-divider {
+            height: 1px;
+            background-color: var(--border-light, #e5e7eb);
+            margin: 0.25rem 0;
+        }
+
+        /* Dropdown items (links or buttons) */
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem; 
+            font-size: 0.875rem; 
+            color: var(--text-primary, #1f2937);
+            text-decoration: none;
+            transition: background-color 0.2s;
+            text-align: left; /* Ensure buttons align */
+            border: none; /* Reset button styles */
+            background: none; /* Reset button styles */
+            cursor: pointer; /* Ensure cursor is pointer */
+        }
+
+        .dropdown-item:hover {
+            background-color: #f9fafb; /* Very light hover */
+        }
+
+        /* For the <button> inside the dropdown */
+        .dropdown-item-btn {
+            color: var(--danger-color, #ef4444); /* Make logout red */
+            font-weight: 500;
+        }
+
+        .dropdown-item-btn:hover {
+            background-color: #fef2f2; /* Light red hover */
+        }
+    </style>
 </head>
 <body>
+    
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">
+            <a href="index.html" class="logo">
                 <span class="logo-icon">📊</span>
                 DIGIPINE
-            </div>
+            </a>
+
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="dashboard.html" class="active">Analytics Platform</a></li>
                 <li><a href="#pricing">Pricing</a></li>
                 <li><a href="upload.html">Data Integration</a></li>
             </ul>
+
+            <div class="nav-spacer"></div>
+
+            <div class="navbar-profile-container">
+                
+                <button id="navbar-profile-btn" class="navbar-profile-icon-btn" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                
+                <div id="navbar-profile-dropdown" class="navbar-dropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-label">Signed in as</div>
+                        <div class="dropdown-header-email" id="navbar-profile-email">...</div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button id="navbar-logout-btn" class="dropdown-item dropdown-item-btn">
+                        Log Out
+                    </button>
+                </div>
+            </div>
+            
         </div>
     </nav>
 
@@ -94,7 +250,6 @@
 
     <div class="dashboard-content">
         <div class="container">
-            <!-- Key Performance Indicators -->
             <div class="kpi-section">
                 <h2>Market Performance Overview</h2>
                 <div class="metrics-grid">
@@ -137,7 +292,6 @@
                 </div>
             </div>
 
-            <!-- Analytics Grid -->
             <div class="analytics-grid">
                 <div class="analytics-card full-width">
                     <div class="card-header">
@@ -346,7 +500,6 @@
                 </div>
             </div>
 
-            <!-- Zone & Product Insights Section -->
             <div class="insights-section">
                 <div class="insights-header">
                     <h2>Zone & Product Insights</h2>
@@ -356,7 +509,6 @@
                 </div>
 
                 <div class="insights-content">
-                    <!-- Insights Table -->
                     <div class="insights-table-container">
                         <table class="insights-table">
                             <thead>
@@ -400,7 +552,6 @@
                         </table>
                     </div>
 
-                    <!-- Real Interactive Map -->
                     <div class="map-container">
                         <h3>Zone Distribution Map</h3>
                         <div id="realMap" class="real-map"></div>
@@ -470,8 +621,9 @@
             });
         });
     </script>
-    <!-- Dashboard Integration for Upload Data -->
     <script src="dashboard_integration.js"></script>
+
+    <script type="module" src="auth/auth-check.js"></script>
+
 </body>
 </html>
-

@@ -9,20 +9,169 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        /* Makes nav-container take full width and align items */
+        .nav-container {
+            width: 100%;
+            max-width: 1200px; /* You can adjust this */
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Re-style existing nav links to work with flex */
+        .nav-links {
+            display: flex;
+            align-items: center;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            margin-left: 2rem; /* Spacing between logo and links */
+        }
+
+        .nav-links li {
+            margin-left: 1.5rem;
+        }
+
+        .nav-spacer {
+            flex-grow: 1; /* Pushes profile menu to the right */
+        }
+
+        /* --- Profile Dropdown Styles --- */
+        .navbar-profile-container {
+            position: relative; /* Anchor for the dropdown */
+        }
+        
+        /* Icon button style */
+        .navbar-profile-icon-btn {
+            display: flex; /* 'display: none;' is set inline, JS changes it */
+            align-items: center;
+            justify-content: center;
+            background-color: transparent;
+            border: none;
+            border-radius: 50%; /* Make it round */
+            width: 44px;  /* Set fixed size */
+            height: 44px; /* Set fixed size */
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+
+        .navbar-profile-icon-btn svg {
+            width: 48px; /* Size the icon */
+            height: 48px;
+            color: var(--text-secondary, #6b7280); /* Icon color */
+        }
+
+        .navbar-profile-icon-btn:hover {
+            background-color: var(--bg-secondary, #dee2e6); /* Hover effect */
+        }
+
+        /* Dropdown container */
+        .navbar-dropdown {
+            display: none; /* Hidden by default */
+            position: absolute;
+            top: 100%; 
+            right: 0;
+            margin-top: 0.5rem; 
+            background-color: var(--bg-primary, #ffffff);
+            border: 1px solid var(--border-light, #e5e7eb);
+            border-radius: 0.5rem; 
+            box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
+            width: 220px; /* Made wider for email */
+            z-index: 1000;
+            overflow: hidden;
+        }
+        
+        .navbar-dropdown.show {
+            display: block; /* Show the dropdown */
+        }
+        
+        /* Dropdown Header for email */
+        .dropdown-header {
+            padding: 0.75rem 1rem;
+            line-height: 1.4;
+        }
+        .dropdown-header-label {
+            font-size: 0.75rem; /* 12px */
+            font-weight: 500;
+            color: var(--text-secondary, #6b7280);
+        }
+        .dropdown-header-email {
+            font-size: 0.875rem; /* 14px */
+            font-weight: 600;
+            color: var(--text-primary, #1f2937);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        /* Divider */
+        .dropdown-divider {
+            height: 1px;
+            background-color: var(--border-light, #e5e7eb);
+            margin: 0.25rem 0;
+        }
+
+        /* Dropdown items (links or buttons) */
+        .dropdown-item {
+            display: block;
+            width: 100%;
+            padding: 0.75rem 1rem; 
+            font-size: 0.875rem; 
+            color: var(--text-primary, #1f2937);
+            text-decoration: none;
+            transition: background-color 0.2s;
+            text-align: left;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f9fafb;
+        }
+        .dropdown-item-btn {
+            color: var(--danger-color, #ef4444);
+            font-weight: 500;
+        }
+        .dropdown-item-btn:hover {
+            background-color: #fef2f2;
+        }
+    </style>
 </head>
 <body>
     <nav class="navbar">
         <div class="nav-container">
-            <div class="logo">
-                <span class="logo-icon">📊</span>
+            <a href="index.html" class="logo"> <span class="logo-icon">📊</span>
                 DIGIPINE
-            </div>
+            </a>
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="dashboard.html">Analytics Platform</a></li>
                 <li><a href="index.html#pricing">Pricing</a></li>
                 <li><a href="upload.html" class="active">Data Integration</a></li>
             </ul>
+
+            <div class="nav-spacer"></div>
+
+            <div class="navbar-profile-container">
+                <button id="navbar-profile-btn" class="navbar-profile-icon-btn" style="display: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+                <div id="navbar-profile-dropdown" class="navbar-dropdown">
+                    <div class="dropdown-header">
+                        <div class="dropdown-header-label">Signed in as</div>
+                        <div class="dropdown-header-email" id="navbar-profile-email">...</div>
+                    </div>
+                    <div class="dropdown-divider"></div>
+                    <button id="navbar-logout-btn" class="dropdown-item dropdown-item-btn">
+                        Log Out
+                    </button>
+                </div>
+            </div>
         </div>
     </nav>
 
@@ -115,7 +264,6 @@
         </div>
     </section>
 
-    <!-- File Upload Section (Initially Hidden) -->
     <section class="upload-section" id="fileUploadSection" style="display: none;">
         <div class="container">
             <div class="upload-container">
@@ -196,7 +344,6 @@
                 </div>
             </div>
 
-            <!-- Upload Results -->
             <div class="upload-results" id="uploadResults" style="display: none;">
                 <div class="results-header">
                     <div class="success-animation">
@@ -247,48 +394,6 @@
                 <div class="results-actions">
                     <a href="dashboard.html" class="action-button primary large">View Full Dashboard</a>
                     <button class="action-button secondary" id="uploadMoreData">Upload More Data</button>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Sample Data Section -->
-    <section class="sample-data-section">
-        <div class="container">
-            <div class="sample-header">
-                <h2>Try with Sample Data</h2>
-                <p>Explore DIGIPINE's capabilities with our sample market data</p>
-            </div>
-
-            <div class="sample-grid">
-                <div class="sample-card">
-                    <div class="sample-icon">🛒</div>
-                    <h3>Quick-Commerce Sales Data</h3>
-                    <p>Sample data from multiple platforms including Zepto, Blinkit, and Swiggy Instamart</p>
-                    <div class="sample-stats">
-                        <span>10K+ transactions</span> • <span>500+ products</span> • <span>5 regions</span>
-                    </div>
-                    <button class="sample-button" data-sample="ecommerce">Load Sample Data</button>
-                </div>
-
-                <div class="sample-card">
-                    <div class="sample-icon">📊</div>
-                    <h3>Regional Performance Data</h3>
-                    <p>Market intelligence data showing regional trends and performance metrics</p>
-                    <div class="sample-stats">
-                        <span>50+ cities</span> • <span>15 categories</span> • <span>6 months</span>
-                    </div>
-                    <button class="sample-button" data-sample="regional">Load Sample Data</button>
-                </div>
-
-                <div class="sample-card">
-                    <div class="sample-icon">🎯</div>
-                    <h3>Competitive Intelligence</h3>
-                    <p>Competitor analysis and market positioning data for strategic insights</p>
-                    <div class="sample-stats">
-                        <span>100+ brands</span> • <span>Market share</span> • <span>Trend analysis</span>
-                    </div>
-                    <button class="sample-button" data-sample="competitive">Load Sample Data</button>
                 </div>
             </div>
         </div>
@@ -354,5 +459,8 @@
             });
         });
     </script>
+
+    <script type="module" src="auth/auth-check.js"></script>
+
 </body>
 </html>
