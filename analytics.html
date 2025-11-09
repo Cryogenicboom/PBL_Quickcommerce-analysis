@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DIGIPINE Market Intelligence Dashboard</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="analytics.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="navbar-content">
+            <div class="logo">DIGIPINE</div>
+            <div class="nav-title">Market Intelligence Dashboard</div>
+            <button class="export-btn" id="exportReportBtn">Export Report</button>
+        </div>
+        <div class="filter-bar" id="filterBar">
+            <select id="platformFilter">
+                <option value="all">All Platforms</option>
+                <option value="zepto">Zepto</option>
+                <option value="blinkit">Blinkit</option>
+                <option value="swiggy">Swiggy IM</option>
+                <option value="bigbasket">BigBasket</option>
+            </select>
+            <select id="regionFilter">
+                <option value="all">All Regions</option>
+                <option value="mumbai">Mumbai</option>
+                <option value="delhi">Delhi NCR</option>
+                <option value="bangalore">Bangalore</option>
+                <option value="hyderabad">Hyderabad</option>
+                <option value="pune">Pune</option>
+            </select>
+            <select id="timeFilter">
+                <option value="7d">Last 7 Days</option>
+                <option value="30d">Last 30 Days</option>
+                <option value="90d">Last 90 Days</option>
+            </select>
+        </div>
+    </nav>
+    <main class="dashboard-main">
+        <!-- 1. Header / Overview Section -->
+        <section class="overview-section">
+            <h1>DIGIPINE Market Intelligence Dashboard</h1>
+            <p class="subtitle">Data-driven insights across all quick-commerce platforms.</p>
+            <div class="kpi-cards">
+                <div class="kpi-card"><div class="kpi-label">Total Sales</div><div class="kpi-value" id="kpiSales">₹0</div></div>
+                <div class="kpi-card"><div class="kpi-label">Total Orders</div><div class="kpi-value" id="kpiOrders">0</div></div>
+                <div class="kpi-card"><div class="kpi-label">Conversion Rate</div><div class="kpi-value" id="kpiConversion">0%</div></div>
+                <div class="kpi-card"><div class="kpi-label">Active Customers</div><div class="kpi-value" id="kpiCustomers">0</div></div>
+            </div>
+        </section>
+        <!-- 2. Regional Performance Map -->
+        <section class="dashboard-section">
+            <h2>Regional Performance Map</h2>
+            <div class="map-legend">
+                <span class="legend-item high"></span> High Sales
+                <span class="legend-item medium"></span> Medium
+                <span class="legend-item low"></span> Low
+            </div>
+            <div id="regionMap" class="region-map"></div>
+            <div class="insight-box" id="mapInsight">Mumbai leads in sales and growth this week.</div>
+        </section>
+        <!-- 3. Platform & Sales Analysis -->
+        <section class="dashboard-section">
+            <h2>Platform & Sales Analysis</h2>
+            <div class="chart-row">
+                <canvas id="platformChart"></canvas>
+                <div class="kpi-group">
+                    <div class="kpi-box"><div class="kpi-label">Market Share</div><div class="kpi-value" id="marketShare">0%</div></div>
+                    <div class="kpi-box"><div class="kpi-label">Growth</div><div class="kpi-value" id="platformGrowth">0%</div></div>
+                </div>
+            </div>
+            <div class="insight-box">Zepto leads in sales volume, while Swiggy shows highest growth rate.</div>
+        </section>
+        <!-- 4. Category & Product Performance -->
+        <section class="dashboard-section">
+            <h2>Category & Product Performance</h2>
+            <div class="chart-row">
+                <canvas id="categoryChart"></canvas>
+                <div class="top-products">
+                    <h3>Top 10 Products</h3>
+                    <ul id="topProductsList"></ul>
+                </div>
+            </div>
+            <div class="insight-box">Electronics and Groceries remain top categories by sales.</div>
+        </section>
+        <!-- 5. Customer Segmentation & Behavior -->
+        <section class="dashboard-section">
+            <h2>Customer Segmentation & Behavior</h2>
+            <div class="chart-row">
+                <canvas id="customerSegmentationChart"></canvas>
+                <div class="kpi-group">
+                    <div class="kpi-box"><div class="kpi-label">Returning Rate</div><div class="kpi-value" id="returningRate">0%</div></div>
+                    <div class="kpi-box"><div class="kpi-label">CLV</div><div class="kpi-value" id="clv">₹0</div></div>
+                    <div class="kpi-box"><div class="kpi-label">Churn</div><div class="kpi-value" id="churn">0%</div></div>
+                </div>
+            </div>
+            <div class="insight-box">Repeat customers contribute 62% of total revenue.</div>
+        </section>
+        <!-- 6. Funnel Analysis (User Journey) -->
+        <section class="dashboard-section">
+            <h2>Funnel Analysis</h2>
+            <div class="chart-row">
+                <canvas id="funnelChart"></canvas>
+                <div class="kpi-group">
+                    <div class="kpi-box"><div class="kpi-label">Drop-off</div><div class="kpi-value" id="dropoff">0%</div></div>
+                    <div class="kpi-box"><div class="kpi-label">Conversion</div><div class="kpi-value" id="funnelConversion">0%</div></div>
+                </div>
+            </div>
+            <div class="insight-box">Checkout abandonment high (35%) — consider guest checkout.</div>
+        </section>
+        <!-- 7. Inventory & Demand Forecasting -->
+        <section class="dashboard-section">
+            <h2>Inventory & Demand Forecasting</h2>
+            <div class="chart-row">
+                <canvas id="demandChart"></canvas>
+                <div class="kpi-group">
+                    <div class="kpi-box"><div class="kpi-label">Top Category</div><div class="kpi-value" id="topDemandCategory">-</div></div>
+                    <div class="kpi-box"><div class="kpi-label">Forecasted Growth</div><div class="kpi-value" id="forecastGrowth">0%</div></div>
+                </div>
+            </div>
+            <div class="insight-box">Beverages demand expected to rise 25% next week.</div>
+        </section>
+        <!-- 8. Competitive Benchmarking -->
+        <section class="dashboard-section">
+            <h2>Competitive Benchmarking</h2>
+            <div class="chart-row">
+                <canvas id="benchmarkChart"></canvas>
+                <div class="kpi-group">
+                    <div class="kpi-box"><div class="kpi-label">Price Advantage</div><div class="kpi-value" id="priceAdvantage">0%</div></div>
+                </div>
+            </div>
+            <div class="insight-box">Your ‘Dairy’ category is 10% costlier than Blinkit average.</div>
+        </section>
+        <!-- 9. Customer Feedback & Sentiment -->
+        <section class="dashboard-section">
+            <h2>Customer Feedback & Sentiment</h2>
+            <div class="chart-row">
+                <canvas id="sentimentChart"></canvas>
+                <div class="kpi-group">
+                    <div class="kpi-box"><div class="kpi-label">CSAT</div><div class="kpi-value" id="csat">0</div></div>
+                    <div class="kpi-box"><div class="kpi-label">NPS</div><div class="kpi-value" id="nps">0</div></div>
+                </div>
+            </div>
+            <div class="insight-box">Top complaint: Delivery delays in Pune region.</div>
+        </section>
+    </main>
+    <script src="analytics.js"></script>
+</body>
+</html>

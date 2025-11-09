@@ -631,5 +631,14 @@ function animateMapUpdate() {
 }
 
 // Initialize on page load
-initMap();
-initCharts();
+try {
+    initMap();
+} catch (e) {
+    const mapError = document.getElementById('mapErrorMsg');
+    if (mapError) mapError.style.display = 'block';
+}
+try {
+    initCharts();
+} catch (e) {
+    // Optionally show chart error
+}

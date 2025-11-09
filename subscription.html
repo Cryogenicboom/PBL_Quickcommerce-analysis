@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+    // Redirect to login if not authenticated
+    if (!localStorage.getItem('digipine_logged_in')) {
+        window.location.href = 'auth/login.html';
+    }
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subscription Plans</title>
+    <link rel="stylesheet" href="styles_new.css">
+    <script src="redirect.js"></script>
+    <style>
+        body {
+            background: #f7f9fb;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .subscription-container {
+            max-width: 1100px;
+            margin: 60px auto 0 auto;
+            padding: 30px 20px;
+            display: flex;
+            gap: 32px;
+            justify-content: center;
+        }
+        .pricing-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+            flex: 1 1 300px;
+            padding: 32px 28px 28px 28px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            transition: box-shadow 0.2s;
+        }
+        .pricing-card:hover {
+            box-shadow: 0 8px 32px rgba(0,0,0,0.13);
+        }
+        .pricing-title {
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            color: #1a2340;
+            text-align: center;
+        }
+        .pricing-desc {
+            font-size: 1rem;
+            color: #4a5568;
+            margin-bottom: 32px;
+            text-align: center;
+        }
+        .subscribe-btn {
+            background: #1a73e8;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            padding: 12px 32px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .subscribe-btn:hover {
+            background: #155ab6;
+        }
+        @media (max-width: 900px) {
+            .subscription-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header style="text-align:center; margin-top:32px;">
+        <h1 style="font-size:2.2rem; color:#1a2340; font-weight:700;">Choose Your Subscription Plan</h1>
+        <p style="color:#4a5568; font-size:1.1rem; margin-top:8px;">Flexible options for every business need</p>
+    </header>
+    <div class="subscription-container">
+        <div class="pricing-card">
+            <div class="pricing-title">Consulting & Dashboard</div>
+            <div class="pricing-desc">
+                Includes expert consultation and full access to our advanced analytics dashboard.<br>
+                Get personalized guidance and actionable insights for your business growth.
+            </div>
+            <button class="subscribe-btn">Subscribe</button>
+        </div>
+        <div class="pricing-card">
+            <div class="pricing-title">API Access</div>
+            <div class="pricing-desc">
+                Provides seamless API integration for real-time market and delivery data.<br>
+                Empower your systems with up-to-date, actionable information.
+            </div>
+            <button class="subscribe-btn">Subscribe</button>
+        </div>
+        <div class="pricing-card">
+            <div class="pricing-title">Dashboard & Data Analysis</div>
+            <div class="pricing-desc">
+                Offers dashboard insights and analytics without consultation.<br>
+                Perfect for teams seeking self-serve data exploration and reporting.
+            </div>
+            <button class="subscribe-btn">Subscribe</button>
+        </div>
+    </div>
+</body>
+</html>

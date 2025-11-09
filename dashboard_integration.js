@@ -582,3 +582,139 @@ integrationStyles.textContent = `
     }
 `;
 document.head.appendChild(integrationStyles);
+
+// --- Chart.js Analytics Section Initialization ---
+document.addEventListener('DOMContentLoaded', function() {
+    // Funnel Analysis
+    window.funnelChart = new Chart(document.getElementById('funnelChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['View', 'Add to Cart', 'Checkout', 'Payment', 'Purchase'],
+            datasets: [{
+                label: 'Users',
+                data: [1000, 700, 400, 300, 250],
+                backgroundColor: ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b'],
+                borderRadius: 8,
+                maxBarThickness: 38
+            }]
+        },
+        options: {
+            indexAxis: 'y',
+            plugins: { legend: { display: false } },
+            scales: { x: { beginAtZero: true } }
+        }
+    });
+
+    // Customer Segmentation
+    window.segmentationChart = new Chart(document.getElementById('segmentationChart').getContext('2d'), {
+        type: 'doughnut',
+        data: {
+            labels: ['New', 'Loyal', 'High-value', 'Churn risk'],
+            datasets: [{
+                data: [320, 180, 90, 60],
+                backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#ef4444'],
+                borderWidth: 2,
+                borderColor: '#fff'
+            }]
+        },
+        options: { cutout: '70%', plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Inventory & Demand Forecasting
+    window.forecastChart = new Chart(document.getElementById('forecastChart').getContext('2d'), {
+        type: 'line',
+        data: {
+            labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+            datasets: [
+                { label: 'Current', data: [120, 140, 130, 150, 170, 160, 180], borderColor: '#6366f1', backgroundColor: 'rgba(99,102,241,0.1)', tension: 0.4, fill: true },
+                { label: 'Predicted', data: [130, 150, 145, 160, 180, 175, 200], borderColor: '#10b981', backgroundColor: 'rgba(16,185,129,0.1)', borderDash: [6,4], tension: 0.4, fill: true }
+            ]
+        },
+        options: { plugins: { legend: { position: 'bottom' } } }
+    });
+
+    // Conversion Rate Optimization (CRO)
+    window.croChart = new Chart(document.getElementById('croChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['CTA A', 'CTA B'],
+            datasets: [{
+                label: 'Conversion Rate',
+                data: [3.2, 3.6],
+                backgroundColor: ['#6366f1', '#10b981'],
+                borderRadius: 8,
+                maxBarThickness: 38
+            }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, max: 5 } } }
+    });
+
+    // Competitive Analysis
+    window.competitiveChart = new Chart(document.getElementById('competitiveChart').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: ['Your Platform', 'Zepto', 'Blinkit', 'Swiggy'],
+            datasets: [{
+                label: 'Avg Price (₹)',
+                data: [95, 100, 102, 98],
+                backgroundColor: ['#6366f1', '#ef4444', '#f59e0b', '#10b981'],
+                borderRadius: 8,
+                maxBarThickness: 38
+            }]
+        },
+        options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+    });
+
+    // Fraud vs Non-Fraud Deliveries Chart
+    if (document.getElementById('fraudPieChart')) {
+        new Chart(document.getElementById('fraudPieChart').getContext('2d'), {
+            type: 'doughnut',
+            data: {
+                labels: ['Non-Fraud', 'Fraud'],
+                datasets: [{
+                    data: [92, 8], // Example: 92% non-fraud, 8% fraud
+                    backgroundColor: ['#10b981', '#ef4444'],
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                cutout: '70%',
+                plugins: {
+                    legend: { position: 'bottom' },
+                    tooltip: { enabled: true }
+                }
+            }
+        });
+    }
+
+    // Animate metrics
+    animateMetric('totalSales', 0, 125000, 1200, '₹');
+    animateMetric('totalOrders', 0, 3200, 1200);
+    animateMetric('conversionRate', 0, 3.8, 1200, '', '%');
+    animateMetric('activeCustomers', 0, 1120, 1200);
+    animateMetric('funnelConversion', 0, 25, 1000, '', '%');
+    animateMetric('cartAbandonment', 0, 18, 1000, '', '%');
+    animateMetric('returningCustomerRate', 0, 42, 1000, '', '%');
+    animateMetric('clv', 0, 3200, 1000, '₹');
+    animateMetric('stockoutRisk', 0, 7, 1000, '', '%');
+    animateMetric('predictedDemand', 0, 210, 1000);
+    animateMetric('croImprovement', 0, 12, 1000, '', '%');
+    animateMetric('priceCompetitiveness', 0, 5, 1000, '', '%');
+});
+
+function animateMetric(id, start, end, duration, prefix = '', suffix = '') {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let startTimestamp = null;
+    const step = (timestamp) => {
+        if (!startTimestamp) startTimestamp = timestamp;
+        const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+        const value = start + (end - start) * progress;
+        el.textContent = prefix + (suffix === '%' ? value.toFixed(1) : Math.floor(value)) + suffix;
+        if (progress < 1) {
+            window.requestAnimationFrame(step);
+        }
+    };
+    window.requestAnimationFrame(step);
+}

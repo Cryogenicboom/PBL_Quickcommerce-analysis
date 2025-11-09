@@ -1,10 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+    // Redirect to login if not authenticated
+    if (!localStorage.getItem('digipine_logged_in')) {
+        window.location.href = 'auth/login.html';
+    }
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DIGIPINE - Market Intelligence Dashboard</title>
     <link rel="stylesheet" href="styles_new.css">
+    <script src="redirect.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -158,7 +165,7 @@
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="dashboard.html" class="active">Analytics Platform</a></li>
-                <li><a href="#pricing">Pricing</a></li>
+                <li><a href="subscription.html" target="_blank">Pricing</a></li>
                 <li><a href="upload.html">Data Integration</a></li>
             </ul>
 
@@ -250,223 +257,151 @@
 
     <div class="dashboard-content">
         <div class="container">
-            <div class="kpi-section">
-                <h2>Market Performance Overview</h2>
-                <div class="metrics-grid">
-                    <div class="metric-card trending">
-                        <div class="metric-header">
-                            <div class="metric-icon">📈</div>
-                            <div class="metric-trend positive">+12.5%</div>
-                        </div>
-                        <div class="metric-value" id="totalProducts">2,847</div>
-                        <div class="metric-label">Products Tracked</div>
-                        <div class="metric-detail">Across all platforms</div>
+            <!-- Data Overview Section -->
+            <section class="data-overview">
+                <h2>Data Overview</h2>
+                <div class="overview-metrics-grid">
+                    <div class="overview-metric-card">
+                        <div class="metric-icon">💰</div>
+                        <div class="metric-value" id="totalSales" data-metric="revenue">₹0</div>
+                        <div class="metric-label">Total Sales</div>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon">🎯</div>
-                            <div class="metric-trend positive">+8.3%</div>
-                        </div>
-                        <div class="metric-value" id="trendingProducts">247</div>
-                        <div class="metric-label">Trending Products</div>
-                        <div class="metric-detail">This week</div>
+                    <div class="overview-metric-card">
+                        <div class="metric-icon">🛒</div>
+                        <div class="metric-value" id="totalOrders" data-metric="total-orders">0</div>
+                        <div class="metric-label">Total Orders</div>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon">🏆</div>
-                            <div class="metric-trend neutral">-</div>
-                        </div>
-                        <div class="metric-value" id="topRegion">Mumbai North</div>
-                        <div class="metric-label">Top Performing Region</div>
-                        <div class="metric-detail">By sales velocity</div>
+                    <div class="overview-metric-card">
+                        <div class="metric-icon">🔄</div>
+                        <div class="metric-value" id="conversionRate" data-metric="conversion">0%</div>
+                        <div class="metric-label">Conversion Rate</div>
                     </div>
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon">⚡</div>
-                            <div class="metric-trend positive">+15.7%</div>
-                        </div>
-                        <div class="metric-value" id="marketGrowth">23.4%</div>
-                        <div class="metric-label">Market Growth</div>
-                        <div class="metric-detail">QoQ growth rate</div>
+                    <div class="overview-metric-card">
+                        <div class="metric-icon">👥</div>
+                        <div class="metric-value" id="activeCustomers" data-metric="active-customers">0</div>
+                        <div class="metric-label">Active Customers</div>
                     </div>
                 </div>
-            </div>
+            </section>
 
-            <div class="analytics-grid">
-                <div class="analytics-card full-width">
-                    <div class="card-header">
-                        <h3>Regional Performance Heatmap</h3>
-                        <div class="card-actions">
-                            <select class="metric-selector">
-                                <option value="sales">Sales Volume</option>
-                                <option value="growth">Growth Rate</option>
-                                <option value="trending">Trending Score</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="map-container">
-                        <div id="performanceMap" class="performance-map"></div>
+            <!-- Regional Performance Map (keep as is) -->
+            <section class="analytics-card full-width">
+                <div class="card-header">
+                    <h3>Regional Performance Overview</h3>
+                    <div class="card-actions">
+                        <select class="metric-selector">
+                            <option value="sales">Sales Volume</option>
+                            <option value="growth">Growth Rate</option>
+                            <option value="trending">Trending Score</option>
+                        </select>
                     </div>
                 </div>
+                <div class="map-container">
+                    <div id="performanceMap" class="performance-map"></div>
+                </div>
+            </section>
 
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Platform Distribution</h3>
-                        <div class="card-info">Market share by platform</div>
+            <!-- Funnel Analysis -->
+            <section class="analytics-card">
+                <div class="card-header">
+                    <h3>Funnel Analysis</h3>
+                    <div class="card-info">Track user drop-off at each stage of the purchase journey.</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="funnelChart"></canvas>
+                </div>
+                <div class="kpi-row">
+                    <div class="kpi-box">
+                        <div class="kpi-label">Conversion Rate</div>
+                        <div class="kpi-value" id="funnelConversion">0%</div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="platformChart"></canvas>
-                    </div>
-                    <div class="platform-stats">
-                        <div class="platform-stat">
-                            <div class="platform-indicator zepto"></div>
-                            <span class="platform-name">Zepto</span>
-                            <span class="platform-value">34.2%</span>
-                        </div>
-                        <div class="platform-stat">
-                            <div class="platform-indicator blinkit"></div>
-                            <span class="platform-name">Blinkit</span>
-                            <span class="platform-value">28.7%</span>
-                        </div>
-                        <div class="platform-stat">
-                            <div class="platform-indicator swiggy"></div>
-                            <span class="platform-name">Swiggy IM</span>
-                            <span class="platform-value">22.1%</span>
-                        </div>
-                        <div class="platform-stat">
-                            <div class="platform-indicator others"></div>
-                            <span class="platform-name">Others</span>
-                            <span class="platform-value">15.0%</span>
-                        </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">Cart Abandonment</div>
+                        <div class="kpi-value" id="cartAbandonment">0%</div>
                     </div>
                 </div>
+                <div class="insight-text">High cart abandonment in Mumbai suggests checkout friction.</div>
+            </section>
 
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Category Trends</h3>
-                        <div class="card-info">7-day trending categories</div>
+            <!-- Customer Segmentation -->
+            <section class="analytics-card">
+                <div class="card-header">
+                    <h3>Customer Segmentation</h3>
+                    <div class="card-info">Understand your customer base by segment.</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="segmentationChart"></canvas>
+                </div>
+                <div class="kpi-row">
+                    <div class="kpi-box">
+                        <div class="kpi-label">Returning Customer Rate</div>
+                        <div class="kpi-value" id="returningCustomerRate">0%</div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="categoryTrendChart"></canvas>
+                    <div class="kpi-box">
+                        <div class="kpi-label">CLV</div>
+                        <div class="kpi-value" id="clv">₹0</div>
                     </div>
                 </div>
+                <div class="insight-text">Loyal users drive 60% of repeat sales.</div>
+            </section>
 
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Demand Forecasting</h3>
-                        <div class="card-info">AI-powered predictions</div>
+            <!-- Inventory & Demand Forecasting -->
+            <section class="analytics-card">
+                <div class="card-header">
+                    <h3>Inventory & Demand Forecasting</h3>
+                    <div class="card-info">Predict demand and optimize inventory levels.</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="forecastChart"></canvas>
+                </div>
+                <div class="kpi-row">
+                    <div class="kpi-box">
+                        <div class="kpi-label">Stockout Risk</div>
+                        <div class="kpi-value" id="stockoutRisk">0%</div>
                     </div>
-                    <div class="chart-container">
-                        <canvas id="demandForecastChart"></canvas>
-                    </div>
-                    <div class="forecast-insights">
-                        <div class="insight-item">
-                            <span class="insight-icon">📈</span>
-                            <span class="insight-text">Electronics demand +25% next week</span>
-                        </div>
-                        <div class="insight-item">
-                            <span class="insight-icon">🎯</span>
-                            <span class="insight-text">Fashion peak expected in 3 days</span>
-                        </div>
+                    <div class="kpi-box">
+                        <div class="kpi-label">Predicted Demand</div>
+                        <div class="kpi-value" id="predictedDemand">0</div>
                     </div>
                 </div>
+                <div class="insight-text">Demand for electronics expected to rise next week.</div>
+            </section>
 
-                <div class="analytics-card full-width">
-                    <div class="card-header">
-                        <h3>Product Performance Timeline</h3>
-                        <div class="timeline-controls">
-                            <button class="timeline-btn active" data-metric="sales">Sales Volume</button>
-                            <button class="timeline-btn" data-metric="growth">Growth Rate</button>
-                            <button class="timeline-btn" data-metric="market-share">Market Share</button>
-                        </div>
-                    </div>
-                    <div class="chart-container large">
-                        <canvas id="timelineChart"></canvas>
+            <!-- Conversion Rate Optimization (CRO) -->
+            <section class="analytics-card">
+                <div class="card-header">
+                    <h3>Conversion Rate Optimization (CRO)</h3>
+                    <div class="card-info">Compare conversion rates for A/B tested CTAs or landing pages.</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="croChart"></canvas>
+                </div>
+                <div class="kpi-row">
+                    <div class="kpi-box">
+                        <div class="kpi-label">Conversion Improvement</div>
+                        <div class="kpi-value" id="croImprovement">0%</div>
                     </div>
                 </div>
+                <div class="insight-text">CTA B outperformed CTA A by 12%.</div>
+            </section>
 
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Top Trending Products</h3>
-                        <div class="card-info">This week's winners</div>
-                    </div>
-                    <div class="trending-list">
-                        <div class="trending-item">
-                            <div class="trending-rank">1</div>
-                            <div class="trending-info">
-                                <div class="trending-name">iPhone 15 Pro</div>
-                                <div class="trending-category">Electronics</div>
-                            </div>
-                            <div class="trending-change positive">+45.2%</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-rank">2</div>
-                            <div class="trending-info">
-                                <div class="trending-name">Organic Bananas</div>
-                                <div class="trending-category">Groceries</div>
-                            </div>
-                            <div class="trending-change positive">+32.8%</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-rank">3</div>
-                            <div class="trending-info">
-                                <div class="trending-name">Nike Air Max</div>
-                                <div class="trending-category">Fashion</div>
-                            </div>
-                            <div class="trending-change positive">+28.5%</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-rank">4</div>
-                            <div class="trending-info">
-                                <div class="trending-name">Protein Powder</div>
-                                <div class="trending-category">Health</div>
-                            </div>
-                            <div class="trending-change positive">+24.1%</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-rank">5</div>
-                            <div class="trending-info">
-                                <div class="trending-name">Smart Watch</div>
-                                <div class="trending-category">Electronics</div>
-                            </div>
-                            <div class="trending-change positive">+19.7%</div>
-                        </div>
+            <!-- Competitive Analysis -->
+            <section class="analytics-card">
+                <div class="card-header">
+                    <h3>Competitive Analysis</h3>
+                    <div class="card-info">Compare your platform’s pricing with competitors.</div>
+                </div>
+                <div class="chart-container">
+                    <canvas id="competitiveChart"></canvas>
+                </div>
+                <div class="kpi-row">
+                    <div class="kpi-box">
+                        <div class="kpi-label">Price Competitiveness</div>
+                        <div class="kpi-value" id="priceCompetitiveness">0%</div>
                     </div>
                 </div>
-
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Market Alerts</h3>
-                        <div class="card-info">Real-time notifications</div>
-                    </div>
-                    <div class="alerts-list">
-                        <div class="alert-item high">
-                            <div class="alert-icon">🚨</div>
-                            <div class="alert-content">
-                                <div class="alert-title">Sudden Demand Spike</div>
-                                <div class="alert-desc">Gaming laptops up 67% in Bangalore</div>
-                                <div class="alert-time">2 mins ago</div>
-                            </div>
-                        </div>
-                        <div class="alert-item medium">
-                            <div class="alert-icon">⚠️</div>
-                            <div class="alert-content">
-                                <div class="alert-title">Inventory Alert</div>
-                                <div class="alert-desc">Low stock warning for beauty products</div>
-                                <div class="alert-time">15 mins ago</div>
-                            </div>
-                        </div>
-                        <div class="alert-item low">
-                            <div class="alert-icon">📊</div>
-                            <div class="alert-content">
-                                <div class="alert-title">Trend Update</div>
-                                <div class="alert-desc">Eco-friendly products gaining momentum</div>
-                                <div class="alert-time">1 hour ago</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                <div class="insight-text">Your average price is 5% lower than Zepto.</div>
+            </section>
         </div>
     </div>
                     <div class="chart-container">
@@ -474,43 +409,21 @@
                     </div>
                 </div>
 
-                <div class="chart-card">
-                    <h3>Fraud vs Non-Fraud Deliveries</h3>
-                    <div class="chart-container">
-                        <canvas id="fraudPieChart"></canvas>
-                    </div>
-                </div>
+                <!-- Fraud vs Non-Fraud Deliveries card removed -->
 
-                <div class="chart-card">
-                    <h3>Zone Performance Details</h3>
-                    <div class="zone-details">
-                        <div class="zone-item">
-                            <span class="zone-code">AB12-34CD</span>
-                            <span class="zone-stat">652 orders • 11.3 min • Electronics</span>
-                        </div>
-                        <div class="zone-item">
-                            <span class="zone-code">XY45-78ZT</span>
-                            <span class="zone-stat">738 orders • 13.2 min • Groceries</span>
-                        </div>
-                        <div class="zone-item">
-                            <span class="zone-code">PQ99-12AA</span>
-                            <span class="zone-stat">457 orders • 14.8 min • Food & Beverage</span>
-                        </div>
-                    </div>
-                </div>
+                <!-- Zone Performance Details section removed as requested -->
             </div>
 
-            <div class="insights-section">
-                <div class="insights-header">
+            <div class="insights-section" style="text-align:center;">
+                <div class="insights-header" style="justify-content:center; display:flex; flex-direction:column; align-items:center;">
                     <h2>Zone & Product Insights</h2>
-                    <button id="generateInsights" class="insights-button">
+                    <button id="generateInsights" class="insights-button" style="margin:0 auto;">
                         <span class="button-icon">🔄</span> Generate Insights
                     </button>
                 </div>
-
-                <div class="insights-content">
-                    <div class="insights-table-container">
-                        <table class="insights-table">
+                <div class="insights-content-flex" style="justify-content:center; align-items:center;">
+                    <div class="insights-table-container" style="margin:0 auto;">
+                        <table class="insights-table styled-table">
                             <thead>
                                 <tr>
                                     <th>Zone</th>
@@ -551,10 +464,10 @@
                             </tbody>
                         </table>
                     </div>
-
-                    <div class="map-container">
+                    <div class="map-container insights-map" style="margin:0 auto; max-width:700px; min-width:400px;">
                         <h3>Zone Distribution Map</h3>
-                        <div id="realMap" class="real-map"></div>
+                        <div id="realMap" class="real-map" style="height:400px;"></div>
+                        <div id="mapErrorMsg" style="display:none;color:#ef4444;text-align:center;margin-top:1em;font-weight:500;">Map failed to load. Please check your connection or refresh.</div>
                     </div>
                 </div>
             </div>
@@ -563,45 +476,30 @@
 
     <footer class="footer">
         <div class="container">
-            <div class="footer-content">
+            <div class="footer-content" style="display: flex; flex-wrap: wrap; gap: 32px; align-items: flex-start; justify-content: space-between;">
                 <div class="footer-section">
                     <div class="footer-logo">
                         <span class="logo-icon">📊</span>
                         DIGIPINE
                     </div>
-                    <p>Empowering businesses with market intelligence for quick-commerce success.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Platform</h4>
-                    <ul>
-                        <li><a href="dashboard.html">Analytics Dashboard</a></li>
-                        <li><a href="upload.html">Data Integration</a></li>
-                        <li><a href="index.html#pricing">Pricing Plans</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Solutions</h4>
-                    <ul>
-                        <li><a href="#">Trend Analysis</a></li>
-                        <li><a href="#">Regional Insights</a></li>
-                        <li><a href="#">Competitive Intelligence</a></li>
-                    </ul>
+                    <p style="max-width: 340px;">Empowering businesses with market intelligence for quick-commerce success.</p>
                 </div>
                 <div class="footer-section">
                     <h4>Contact</h4>
-                    <ul>
+                    <ul style="list-style:none; padding:0;">
                         <li>Email: hello@digipine.com</li>
                         <li>Phone: +91 98765 43210</li>
-                        <li>Support: support@digipine.com</li>
+                        <li>Address: 123 Market Road, Mumbai, India</li>
                     </ul>
                 </div>
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 DIGIPINE. All rights reserved.</p>
+            <div class="footer-bottom" style="text-align:center; margin-top:18px;">
+                <p>All Rights Reserved © DIGIPINE 2025</p>
             </div>
         </div>
     </footer>
 
+    <script src="dashboard.js"></script>
     <script src="market_dashboard.js"></script>
     <script>
         // Smooth page transitions
