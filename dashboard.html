@@ -158,8 +158,7 @@
             <ul class="nav-links">
                 <li><a href="index.html">Home</a></li>
                 <li><a href="dashboard.html" class="active">Analytics Platform</a></li>
-                <li><a href="#pricing">Pricing</a></li>
-                <li><a href="upload.html">Data Integration</a></li>
+                <li><a href="upload_new.html">Data Integration</a></li>
             </ul>
 
             <div class="nav-spacer"></div>
@@ -466,97 +465,136 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
+
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Delivery Performance</h3>
+                        <div class="card-actions">
+                            <select class="time-range-select">
+                                <option value="24h">24 Hours</option>
+                                <option value="7d" selected>7 Days</option>
+                                <option value="30d">30 Days</option>
+                            </select>
+                        </div>
+                    </div>
                     <div class="chart-container">
                         <canvas id="deliveryTimeTrendChart"></canvas>
                     </div>
+                    <div class="delivery-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">Avg. Time</span>
+                            <span class="stat-value" id="avgDeliveryTime">13.2 min</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">On-Time Rate</span>
+                            <span class="stat-value" id="onTimeRate">94.5%</span>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="chart-card">
-                    <h3>Fraud vs Non-Fraud Deliveries</h3>
-                    <div class="chart-container">
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Fraud Analysis</h3>
+                        <div class="card-info">Delivery verification stats</div>
+                    </div>
+                    <div class="chart-container fraud-chart">
                         <canvas id="fraudPieChart"></canvas>
                     </div>
+                    <div class="fraud-stats">
+                        <div class="stat-group verified">
+                            <div class="stat-label">Verified Deliveries</div>
+                            <div class="stat-value" id="verifiedCount">2,847</div>
+                        </div>
+                        <div class="stat-group flagged">
+                            <div class="stat-label">Flagged for Review</div>
+                            <div class="stat-value" id="flaggedCount">73</div>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="chart-card">
-                    <h3>Zone Performance Details</h3>
+                <div class="analytics-card">
+                    <div class="card-header">
+                        <h3>Latest Alerts</h3>
+                        <div class="card-info">Real-time updates</div>
+                    </div>
+                    <div class="alerts-list" id="alertsList">
+                        <!-- Alerts will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Replace the broken section with this organized layout -->
+                <div class="analytics-card full-width">
+                    <div class="card-header">
+                        <h3>Zone Performance Details</h3>
+                        <div class="card-info">Real-time zone metrics</div>
+                    </div>
                     <div class="zone-details">
-                        <div class="zone-item">
-                            <span class="zone-code">AB12-34CD</span>
-                            <span class="zone-stat">652 orders • 11.3 min • Electronics</span>
-                        </div>
-                        <div class="zone-item">
-                            <span class="zone-code">XY45-78ZT</span>
-                            <span class="zone-stat">738 orders • 13.2 min • Groceries</span>
-                        </div>
-                        <div class="zone-item">
-                            <span class="zone-code">PQ99-12AA</span>
-                            <span class="zone-stat">457 orders • 14.8 min • Food & Beverage</span>
+                        <div class="zone-grid">
+                            <div class="zone-item">
+                                <div class="zone-header">
+                                    <span class="zone-code">AB12-34CD</span>
+                                    <span class="zone-badge success">Active</span>
+                                </div>
+                                <div class="zone-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Orders</span>
+                                        <span class="stat-value">652</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Avg Time</span>
+                                        <span class="stat-value">11.3 min</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Top Category</span>
+                                        <span class="stat-value">Electronics</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="zone-item">
+                                <div class="zone-header">
+                                    <span class="zone-code">XY45-78ZT</span>
+                                    <span class="zone-badge warning">Review</span>
+                                </div>
+                                <div class="zone-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Orders</span>
+                                        <span class="stat-value">738</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Avg Time</span>
+                                        <span class="stat-value">13.2 min</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Top Category</span>
+                                        <span class="stat-value">Groceries</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="zone-item">
+                                <div class="zone-header">
+                                    <span class="zone-code">PQ99-12AA</span>
+                                    <span class="zone-badge danger">Critical</span>
+                                </div>
+                                <div class="zone-stats">
+                                    <div class="stat-item">
+                                        <span class="stat-label">Orders</span>
+                                        <span class="stat-value">457</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Avg Time</span>
+                                        <span class="stat-value">14.8 min</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <span class="stat-label">Top Category</span>
+                                        <span class="stat-value">Food & Beverage</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-
-            <div class="insights-section">
-                <div class="insights-header">
-                    <h2>Zone & Product Insights</h2>
-                    <button id="generateInsights" class="insights-button">
-                        <span class="button-icon">🔄</span> Generate Insights
-                    </button>
-                </div>
-
-                <div class="insights-content">
-                    <div class="insights-table-container">
-                        <table class="insights-table">
-                            <thead>
-                                <tr>
-                                    <th>Zone</th>
-                                    <th>Orders</th>
-                                    <th>Avg ETA</th>
-                                    <th>Fraud %</th>
-                                    <th>Suggested Action</th>
-                                </tr>
-                            </thead>
-                            <tbody id="insightsTableBody">
-                                <tr>
-                                    <td><span class="table-zone-code">AB12-34CD</span></td>
-                                    <td class="data-orders">652</td>
-                                    <td class="data-eta">11.3 min</td>
-                                    <td class="data-fraud">1.8%</td>
-                                    <td class="action-cell">
-                                        <span class="action-badge action-optimize">Optimize delivery route</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="table-zone-code">XY45-78ZT</span></td>
-                                    <td class="data-orders">738</td>
-                                    <td class="data-eta">13.2 min</td>
-                                    <td class="data-fraud">2.5%</td>
-                                    <td class="action-cell">
-                                        <span class="action-badge action-stock">Increase warehouse stock</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td><span class="table-zone-code">PQ99-12AA</span></td>
-                                    <td class="data-orders">457</td>
-                                    <td class="data-eta">14.8 min</td>
-                                    <td class="data-fraud">2.9%</td>
-                                    <td class="action-cell">
-                                        <span class="action-badge action-review">Review address mapping</span>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <div class="map-container">
-                        <h3>Zone Distribution Map</h3>
-                        <div id="realMap" class="real-map"></div>
-                    </div>
-                </div>
+                
+                <!-- Rest of the analytics cards -->
             </div>
         </div>
     </div>
@@ -575,8 +613,7 @@
                     <h4>Platform</h4>
                     <ul>
                         <li><a href="dashboard.html">Analytics Dashboard</a></li>
-                        <li><a href="upload.html">Data Integration</a></li>
-                        <li><a href="index.html#pricing">Pricing Plans</a></li>
+                        <li><a href="upload_new.html">Data Integration</a></li>
                     </ul>
                 </div>
                 <div class="footer-section">

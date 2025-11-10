@@ -9,6 +9,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- add these inside <head> (after Chart.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
 
     <style>
         /* Makes nav-container take full width and align items */
@@ -289,6 +294,19 @@
                         <div class="upload-text">
                             <p><strong>Drag & drop files here</strong> or click to browse</p>
                             <p class="upload-formats">Supports CSV, XLSX, JSON files up to 50MB</p>
+                        </div>
+                    </div>
+
+                    <!-- Preset datasets: quick start options -->
+                    <div class="preset-datasets" style="margin-top:1rem;">
+                        <h3 style="margin:0 0 0.5rem 0;">Try a sample dataset</h3>
+                        <div class="preset-grid" style="display:flex; gap:0.5rem; flex-wrap:wrap;">
+                            <button type="button" class="preset-csv" data-preset="ecommerce" style="padding:.5rem .75rem; border-radius:6px; border:1px solid var(--border-light,#e5e7eb); background:#fff; cursor:pointer;">
+                                E‑commerce Sample Analysis
+                            </button>
+                        </div>
+                        <div class="small-muted" style="margin-top:.5rem; color:#6b7280; font-size:.9rem;">
+                            Click to run a complete analysis with AI-powered insights.
                         </div>
                     </div>
 

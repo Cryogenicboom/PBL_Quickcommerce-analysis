@@ -582,3 +582,103 @@ integrationStyles.textContent = `
     }
 `;
 document.head.appendChild(integrationStyles);
+
+let platformChart, categoryChart, timelineChart;
+
+function initializeCharts() {
+    // Platform Distribution Chart
+    const platformCtx = document.getElementById('platformChart').getContext('2d');
+    platformChart = new Chart(platformCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Zepto', 'Blinkit', 'Swiggy IM', 'Others'],
+            datasets: [{
+                data: [34.2, 28.7, 22.1, 15.0],
+                backgroundColor: ['#6366f1', '#8b5cf6', '#ec4899', '#9ca3af']
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            }
+        }
+    });
+
+    // Store chart reference globally
+    window.platformChart = platformChart;
+}
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', () => {
+    initializeCharts();
+    updateAlerts();
+    populateTrendingProducts();
+});
+
+// Update alerts with real data
+function updateAlerts() {
+    const alertsList = document.getElementById('alertsList');
+    const alerts = [
+        {
+            level: 'high',
+            icon: '🚨',
+            title: 'High Demand Alert',
+            desc: 'iPhone 15 Pro stock critical',
+            time: '2 mins ago'
+        },
+        {
+            level: 'medium',
+            icon: '⚠️',
+            title: 'Delivery Delays',
+            desc: 'South Mumbai zone affected',
+            time: '15 mins ago'
+        },
+        {
+            level: 'low',
+            icon: '📊',
+            title: 'New Trend Detected',
+            desc: 'Organic products rising',
+            time: '1 hour ago'
+        }
+    ];
+
+    alertsList.innerHTML = alerts.map(alert => `
+        <div class="alert-item ${alert.level}">
+            <div class="alert-icon">${alert.icon}</div>
+            <div class="alert-content">
+                <div class="alert-title">${alert.title}</div>
+                <div class="alert-desc">${alert.desc}</div>
+                <div class="alert-time">${alert.time}</div>
+            </div>
+        </div>
+    `).join('');
+}
+
+// Populate trending products with real data
+function populateTrendingProducts() {
+    const trendingData = [
+        { rank: 1, name: 'iPhone 15 Pro', category: 'Electronics', change: '+45.2%' },
+        { rank: 2, name: 'Organic Bananas', category: 'Groceries', change: '+32.8%' },
+        { rank: 3, name: 'Nike Air Max', category: 'Fashion', change: '+28.5%' },
+        { rank: 4, name: 'Protein Powder', category: 'Health', change: '+24.1%' },
+        { rank: 5, name: 'Smart Watch', category: 'Electronics', change: '+19.7%' }
+    ];
+
+    const trendingList = document.querySelector('.trending-list');
+    if (trendingList) {
+        trendingList.innerHTML = trendingData.map(item => `
+            <div class="trending-item">
+                <div class="trending-rank">${item.rank}</div>
+                <div class="trending-info">
+                    <div class="trending-name">${item.name}</div>
+                    <div class="trending-category">${item.category}</div>
+                </div>
+                <div class="trending-change positive">${item.change}</div>
+            </div>
+        `).join('');
+    }
+}

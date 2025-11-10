@@ -49,74 +49,88 @@ const zoneLocations = {
 
 // Initialize Real Map with Leaflet
 function initMap() {
-    // Create map centered on Mumbai
-    map = L.map('realMap').setView([19.0760, 72.8777], 12);
-    
-    // Add OpenStreetMap tiles (free, no API key required)
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19
-    }).addTo(map);
-    
-    // Add markers for each zone
-    Object.entries(zoneLocations).forEach(([zoneName, location]) => {
-        const zoneMetrics = zoneData.metrics[zoneName];
+    if (!document.getElementById('realMap')) {
+        console.error('Map container not found');
+        return;
+    }
+
+    try {
+        // Create map centered on Mumbai
+        map = L.map('realMap').setView([19.0760, 72.8777], 12);
         
-        // Create custom icon
-        const customIcon = L.divIcon({
-            className: 'custom-marker-icon',
-            html: `<div style="
-                width: 30px;
-                height: 30px;
-                background: ${location.color};
-                border: 3px solid white;
-                border-radius: 50%;
-                box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-            "></div>`,
-            iconSize: [30, 30],
-            iconAnchor: [15, 15]
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors',
+            maxZoom: 19
+        }).addTo(map);
+
+        // Add markers for each zone
+        Object.entries(zoneLocations).forEach(([zoneName, location]) => {
+            addZoneMarker(zoneName, location);
         });
-        
-        // Create popup content
-        const popupContent = `
-            <div class="custom-popup">
-                <div class="popup-zone-code">${zoneName}</div>
-                <div class="popup-stats">
-                    <div class="popup-stat-item">
-                        <span class="popup-stat-label">Orders:</span>
-                        <span class="popup-stat-value">${zoneMetrics.orders['30days']}</span>
-                    </div>
-                    <div class="popup-stat-item">
-                        <span class="popup-stat-label">Avg ETA:</span>
-                        <span class="popup-stat-value">${zoneMetrics.avg_delivery_time} min</span>
-                    </div>
-                    <div class="popup-stat-item">
-                        <span class="popup-stat-label">Top Product:</span>
-                        <span class="popup-stat-value">${zoneMetrics.top_product}</span>
-                    </div>
-                    <div class="popup-stat-item">
-                        <span class="popup-stat-label">Fraud Rate:</span>
-                        <span class="popup-stat-value">${zoneMetrics.fraud_rate}%</span>
-                    </div>
+
+    } catch (error) {
+        console.error('Error initializing map:', error);
+    }
+}
+
+function addZoneMarker(zoneName, location) {
+    const zoneMetrics = zoneData.metrics[zoneName];
+    
+    const customIcon = L.divIcon({
+        className: 'custom-marker-icon',
+        html: `<div style="
+            width: 30px;
+            height: 30px;
+            background: ${location.color};
+            border: 3px solid white;
+            border-radius: 50%;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        "></div>`,
+        iconSize: [30, 30],
+        iconAnchor: [15, 15]
+    });
+    
+    const marker = L.marker([location.lat, location.lng], { icon: customIcon })
+        .addTo(map)
+        .bindPopup(createPopupContent(zoneName, zoneMetrics));
+    
+    mapMarkers.push({ zone: zoneName, marker: marker });
+    
+    // Add zone coverage circle
+    L.circle([location.lat, location.lng], {
+        color: location.color,
+        fillColor: location.color,
+        fillOpacity: 0.1,
+        radius: 2000
+    }).addTo(map);
+}
+
+// Create popup content for a zone
+function createPopupContent(zoneName, zoneMetrics) {
+    return `
+        <div class="custom-popup">
+            <div class="popup-zone-code">${zoneName}</div>
+            <div class="popup-stats">
+                <div class="popup-stat-item">
+                    <span class="popup-stat-label">Orders:</span>
+                    <span class="popup-stat-value">${zoneMetrics.orders['30days']}</span>
+                </div>
+                <div class="popup-stat-item">
+                    <span class="popup-stat-label">Avg ETA:</span>
+                    <span class="popup-stat-value">${zoneMetrics.avg_delivery_time} min</span>
+                </div>
+                <div class="popup-stat-item">
+                    <span class="popup-stat-label">Top Product:</span>
+                    <span class="popup-stat-value">${zoneMetrics.top_product}</span>
+                </div>
+                <div class="popup-stat-item">
+                    <span class="popup-stat-label">Fraud Rate:</span>
+                    <span class="popup-stat-value">${zoneMetrics.fraud_rate}%</span>
                 </div>
             </div>
-        `;
-        
-        // Add marker
-        const marker = L.marker([location.lat, location.lng], { icon: customIcon })
-            .addTo(map)
-            .bindPopup(popupContent);
-        
-        mapMarkers.push({ zone: zoneName, marker: marker });
-        
-        // Add circle to show zone coverage area
-        L.circle([location.lat, location.lng], {
-            color: location.color,
-            fillColor: location.color,
-            fillOpacity: 0.1,
-            radius: 2000 // 2km radius
-        }).addTo(map);
-    });
+        </div>
+    `;
 }
 
 // Initialize charts
@@ -280,51 +294,262 @@ function initCharts() {
         }
     });
 
-    // Fraud vs Non-Fraud Pie Chart
-    const fraudCtx = document.getElementById('fraudPieChart').getContext('2d');
-    fraudPieChart = new Chart(fraudCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Non-Fraud Deliveries', 'Fraud Deliveries'],
-            datasets: [{
-                data: [],
-                backgroundColor: ['#10b981', '#ef4444'],
-                borderWidth: 3,
-                borderColor: '#fff'
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-                legend: {
-                    position: 'bottom',
-                    labels: {
-                        padding: 15,
-                        font: { size: 12 },
-                        usePointStyle: true
-                    }
-                },
-                tooltip: {
-                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                    padding: 12,
-                    titleFont: { size: 14, weight: 'bold' },
-                    bodyFont: { size: 13 },
-                    callbacks: {
-                        label: function(context) {
-                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                            const value = context.parsed;
-                            const percentage = ((value / total) * 100).toFixed(1);
-                            return context.label + ': ' + value.toLocaleString() + ' (' + percentage + '%)';
+    // Initialize Fraud Pie Chart
+    function initFraudChart() {
+        const ctx = document.getElementById('fraudPieChart').getContext('2d');
+        fraudPieChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Verified', 'Flagged'],
+                datasets: [{
+                    data: [2847, 73],
+                    backgroundColor: ['#059669', '#dc2626'],
+                    borderWidth: 0
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '75%',
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            padding: 20,
+                            usePointStyle: true
                         }
                     }
                 }
             }
-        }
+        });
+    }
+
+    // Update alerts list
+    function updateAlerts() {
+        const alertsList = document.getElementById('alertsList');
+        const alerts = [
+            {
+                level: 'high',
+                icon: '🚨',
+                title: 'Sudden Demand Spike',
+                desc: 'Gaming laptops up 67% in Bangalore',
+                time: '2 mins ago'
+            },
+            {
+                level: 'medium',
+                icon: '⚠️',
+                title: 'Inventory Alert',
+                desc: 'Low stock warning for beauty products',
+                time: '15 mins ago'
+            },
+            {
+                level: 'low',
+                icon: '📊',
+                title: 'Trend Update',
+                desc: 'Eco-friendly products gaining momentum',
+                time: '1 hour ago'
+            }
+        ];
+
+        alertsList.innerHTML = alerts.map(alert => `
+            <div class="alert-item ${alert.level}">
+                <div class="alert-icon">${alert.icon}</div>
+                <div class="alert-content">
+                    <div class="alert-title">${alert.title}</div>
+                    <div class="alert-desc">${alert.desc}</div>
+                    <div class="alert-time">${alert.time}</div>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    // Initialize all charts and data
+    document.addEventListener('DOMContentLoaded', () => {
+        initMap();
+        initCharts();
+        initFraudChart();
+        updateAlerts();
+        // Update stats
+        document.getElementById('verifiedCount').textContent = '2,847';
+        document.getElementById('flaggedCount').textContent = '73';
+        document.getElementById('avgDeliveryTime').textContent = '13.2 min';
+        document.getElementById('onTimeRate').textContent = '94.5%';
     });
 
-    // Initial update
-    updateDashboard();
+    // Refresh all data with random variations
+    function refreshAllData() {
+        // Add random variance to zone data
+        Object.keys(zoneData.metrics).forEach(zone => {
+            const variance = 0.1; // 10% variance
+            
+            Object.keys(zoneData.metrics[zone].orders).forEach(timeKey => {
+                const baseValue = zoneData.metrics[zone].orders[timeKey];
+                zoneData.metrics[zone].orders[timeKey] = Math.round(
+                    baseValue * (1 + (Math.random() - 0.5) * variance * 2)
+                );
+            });
+            
+            // Vary delivery time slightly
+            const baseTime = [11.3, 13.2, 14.8][zoneData.zones.indexOf(zone)];
+            zoneData.metrics[zone].avg_delivery_time = (baseTime + (Math.random() - 0.5) * 1.5).toFixed(1);
+            
+            // Vary fraud rate
+            const baseFraud = [1.8, 2.5, 2.9][zoneData.zones.indexOf(zone)];
+            zoneData.metrics[zone].fraud_rate = (baseFraud + (Math.random() - 0.5) * 0.5).toFixed(1);
+        });
+        
+        // Regenerate trend data with slight variations
+        deliveryTrendChart.data.datasets.forEach((dataset, index) => {
+            dataset.data = dataset.data.map(val => 
+                (parseFloat(val) + (Math.random() - 0.5) * 1.0).toFixed(1)
+            );
+        });
+        
+        deliveryTrendChart.update();
+        
+        // Update main dashboard
+        updateDashboard();
+    }
+
+    // Event listeners for filters
+    document.getElementById('productFilter').addEventListener('change', updateDashboard);
+    document.getElementById('timeFilter').addEventListener('change', updateDashboard);
+
+    // Refresh Data button
+    document.getElementById('refreshDataBtn').addEventListener('click', function() {
+        const button = this;
+        const icon = button.querySelector('.button-icon');
+        
+        button.disabled = true;
+        icon.style.animation = 'spin 0.5s linear';
+        
+        setTimeout(() => {
+            refreshAllData();
+            button.disabled = false;
+            icon.style.animation = '';
+        }, 500);
+    });
+
+    // Generate Insights functionality
+    const suggestedActions = [
+        { text: 'Increase warehouse stock', class: 'action-stock' },
+        { text: 'Optimize delivery route', class: 'action-optimize' },
+        { text: 'Review address mapping', class: 'action-review' },
+        { text: 'Add more delivery partners', class: 'action-partners' },
+        { text: 'Improve packaging process', class: 'action-packaging' },
+        { text: 'Enhance fraud detection', class: 'action-fraud' },
+        { text: 'Update zone boundaries', class: 'action-boundaries' },
+        { text: 'Deploy additional vehicles', class: 'action-vehicles' }
+    ];
+
+    document.getElementById('generateInsights').addEventListener('click', function() {
+        const button = this;
+        button.disabled = true;
+        button.innerHTML = '<span class="button-icon">⏳</span> Generating...';
+        
+        // Simulate processing
+        setTimeout(() => {
+            generateRandomInsights();
+            animateMapUpdate();
+            button.disabled = false;
+            button.innerHTML = '<span class="button-icon">🔄</span> Generate Insights';
+        }, 800);
+    });
+
+    function generateRandomInsights() {
+        const timeFilter = document.getElementById('timeFilter').value;
+        const tableBody = document.getElementById('insightsTableBody');
+        
+        // Generate random data for each zone
+        const newData = zoneData.zones.map(zone => {
+            const baseOrders = zoneData.metrics[zone].orders[timeFilter];
+            const variance = 0.15; // 15% variance
+            
+            return {
+                zone: zone,
+                orders: Math.round(baseOrders * (1 + (Math.random() - 0.5) * variance)),
+                eta: (zoneData.metrics[zone].avg_delivery_time + (Math.random() - 0.5) * 2).toFixed(1),
+                fraud: (zoneData.metrics[zone].fraud_rate + (Math.random() - 0.5) * 0.8).toFixed(1),
+                action: suggestedActions[Math.floor(Math.random() * suggestedActions.length)]
+            };
+        });
+        
+        // Update table with animation
+        tableBody.innerHTML = '';
+        newData.forEach((data, index) => {
+            setTimeout(() => {
+                const row = document.createElement('tr');
+                row.style.opacity = '0';
+                row.innerHTML = `
+                    <td><span class="table-zone-code">${data.zone}</span></td>
+                    <td class="data-orders">${data.orders}</td>
+                    <td class="data-eta">${data.eta} min</td>
+                    <td class="data-fraud">${data.fraud}%</td>
+                    <td class="action-cell">
+                        <span class="action-badge ${data.action.class}">${data.action.text}</span>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+                
+                // Fade in animation
+                setTimeout(() => {
+                    row.style.transition = 'opacity 0.5s';
+                    row.style.opacity = '1';
+                }, 50);
+            }, index * 150);
+        });
+        
+        // Update map markers
+        updateMapMarkers(newData);
+    }
+
+    function updateMapMarkers(data) {
+        data.forEach((zoneData, index) => {
+            const mapMarkerObj = mapMarkers.find(m => m.zone === zoneData.zone);
+            if (mapMarkerObj) {
+                const zoneMetrics = zoneData;
+                const location = zoneLocations[zoneData.zone];
+                
+                // Update popup content
+                const popupContent = `
+                    <div class="custom-popup">
+                        <div class="popup-zone-code">${zoneData.zone}</div>
+                        <div class="popup-stats">
+                            <div class="popup-stat-item">
+                                <span class="popup-stat-label">Orders:</span>
+                                <span class="popup-stat-value">${zoneData.orders}</span>
+                            </div>
+                            <div class="popup-stat-item">
+                                <span class="popup-stat-label">Avg ETA:</span>
+                                <span class="popup-stat-value">${zoneData.eta} min</span>
+                            </div>
+                            <div class="popup-stat-item">
+                                <span class="popup-stat-label">Fraud Rate:</span>
+                                <span class="popup-stat-value">${zoneData.fraud}%</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                mapMarkerObj.marker.setPopupContent(popupContent);
+                
+                // Bounce animation
+                mapMarkerObj.marker.openPopup();
+                setTimeout(() => {
+                    mapMarkerObj.marker.closePopup();
+                }, 1500);
+            }
+        });
+    }
+
+    function animateMapUpdate() {
+        // Zoom in and out animation
+        const currentZoom = map.getZoom();
+        map.setZoom(currentZoom + 1);
+        setTimeout(() => {
+            map.setZoom(currentZoom);
+        }, 400);
+    }
 }
 
 // Update dashboard based on filters
@@ -631,5 +856,8 @@ function animateMapUpdate() {
 }
 
 // Initialize on page load
-initMap();
-initCharts();
+document.addEventListener('DOMContentLoaded', () => {
+    initMap();
+    initCharts();
+    updateDashboard();
+});
