@@ -1,666 +1,630 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>DIGIPINE - Market Intelligence Dashboard</title>
-    <link rel="stylesheet" href="styles_new.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+    <link rel="stylesheet" href="styles_new.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Charts + Map libs -->
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+      crossorigin
+    />
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script
+      src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+      crossorigin
+    ></script>
 
     <style>
-        /* Makes nav-container take full width and align items */
-        .nav-container {
-            width: 100%;
-            max-width: 1200px; /* You can adjust this */
-            margin: 0 auto;
-            display: flex;
-            align-items: center;
-        }
-
-        /* Re-style existing nav links to work with flex */
-        .nav-links {
-            display: flex;
-            align-items: center;
-            list-style: none;
-            margin: 0;
-            padding: 0;
-            margin-left: 2rem; /* Spacing between logo and links */
-        }
-
-        .nav-links li {
-            margin-left: 1.5rem;
-        }
-
-        .nav-spacer {
-            flex-grow: 1; /* Pushes profile menu to the right */
-        }
-
-        /* --- Profile Dropdown Styles --- */
-        .navbar-profile-container {
-            position: relative; /* Anchor for the dropdown */
-        }
-        
-        /* NEW: Icon button style */
-        .navbar-profile-icon-btn {
-            display: flex; 
-            align-items: center;
-            justify-content: center;
-            background-color: transparent;
-            border: none;
-            border-radius: 50%;
-            width: 44px;  /* <-- Made it bigger */
-            height: 44px; /* <-- Made it bigger */
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .navbar-profile-icon-btn svg {
-            width: 48px; /* <-- Made the icon bigger */
-            height: 48px; /* <-- Made the icon bigger */
-            color: var(--text-secondary, #6b7280); /* Icon color */
-        }
-
-        .navbar-profile-icon-btn:hover {
-            background-color: var(--bg-secondary, #dee2e6); /* Hover effect */
-        }
-
-        /* Dropdown container */
-        .navbar-dropdown {
-            display: none; /* Hidden by default */
-            position: absolute;
-            top: 100%; 
-            right: 0;
-            margin-top: 0.5rem; 
-            background-color: var(--bg-primary, #ffffff);
-            border: 1px solid var(--border-light, #e5e7eb);
-            border-radius: 0.5rem; 
-            box-shadow: var(--shadow-lg, 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05));
-            width: 220px; /* Made wider for email */
-            z-index: 1000;
-            overflow: hidden;
-        }
-        
-        .navbar-dropdown.show {
-            display: block; /* Show the dropdown */
-        }
-        
-        /* NEW: Dropdown Header for email */
-        .dropdown-header {
-            padding: 0.75rem 1rem;
-            line-height: 1.4;
-        }
-        .dropdown-header-label {
-            font-size: 0.75rem; /* 12px */
-            font-weight: 500;
-            color: var(--text-secondary, #6b7280);
-        }
-        .dropdown-header-email {
-            font-size: 0.875rem; /* 14px */
-            font-weight: 600;
-            color: var(--text-primary, #1f2937);
-            /* Handle long emails */
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-        
-        /* NEW: Divider */
-        .dropdown-divider {
-            height: 1px;
-            background-color: var(--border-light, #e5e7eb);
-            margin: 0.25rem 0;
-        }
-
-        /* Dropdown items (links or buttons) */
-        .dropdown-item {
-            display: block;
-            width: 100%;
-            padding: 0.75rem 1rem; 
-            font-size: 0.875rem; 
-            color: var(--text-primary, #1f2937);
-            text-decoration: none;
-            transition: background-color 0.2s;
-            text-align: left; /* Ensure buttons align */
-            border: none; /* Reset button styles */
-            background: none; /* Reset button styles */
-            cursor: pointer; /* Ensure cursor is pointer */
-        }
-
-        .dropdown-item:hover {
-            background-color: #f9fafb; /* Very light hover */
-        }
-
-        /* For the <button> inside the dropdown */
-        .dropdown-item-btn {
-            color: var(--danger-color, #ef4444); /* Make logout red */
-            font-weight: 500;
-        }
-
-        .dropdown-item-btn:hover {
-            background-color: #fef2f2; /* Light red hover */
-        }
+      .nav-container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+        margin-left: 2rem;
+      }
+      .nav-links li {
+        margin-left: 1.5rem;
+      }
+      .nav-spacer {
+        flex-grow: 1;
+      }
+      .navbar-profile-container {
+        position: relative;
+      }
+      .navbar-profile-icon-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+      }
+      .navbar-profile-icon-btn svg {
+        width: 48px;
+        height: 48px;
+        color: var(--text-secondary, #6b7280);
+      }
+      .navbar-profile-icon-btn:hover {
+        background: var(--bg-secondary, #dee2e6);
+      }
+      .navbar-dropdown {
+        display: none;
+        position: absolute;
+        top: 100%;
+        right: 0;
+        margin-top: 0.5rem;
+        background: var(--bg-primary, #fff);
+        border: 1px solid var(--border-light, #e5e7eb);
+        border-radius: 0.5rem;
+        box-shadow: var(
+          --shadow-lg,
+          0 10px 15px -3px rgba(0, 0, 0, 0.1),
+          0 4px 6px -2px rgba(0, 0, 0, 0.05)
+        );
+        width: 220px;
+        z-index: 1000;
+        overflow: hidden;
+      }
+      .navbar-dropdown.show {
+        display: block;
+      }
+      .dropdown-header {
+        padding: 0.75rem 1rem;
+        line-height: 1.4;
+      }
+      .dropdown-header-label {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: var(--text-secondary, #6b7280);
+      }
+      .dropdown-header-email {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--text-primary, #1f2937);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .dropdown-divider {
+        height: 1px;
+        background: var(--border-light, #e5e7eb);
+        margin: 0.25rem 0;
+      }
+      .dropdown-item {
+        display: block;
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        color: var(--text-primary, #1f2937);
+        text-decoration: none;
+        transition: background-color 0.2s;
+        text-align: left;
+        border: none;
+        background: none;
+        cursor: pointer;
+      }
+      .dropdown-item:hover {
+        background: #f9fafb;
+      }
+      .dropdown-item-btn {
+        color: var(--danger-color, #ef4444);
+        font-weight: 500;
+      }
+      .dropdown-item-btn:hover {
+        background: #fef2f2;
+      }
     </style>
-</head>
-<body>
-    
+  </head>
+  <body>
     <nav class="navbar">
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <span class="logo-icon">📊</span>
-                DIGIPINE
-            </a>
-
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="dashboard.html" class="active">Analytics Platform</a></li>
-                <li><a href="upload_new.html">Data Integration</a></li>
-            </ul>
-
-            <div class="nav-spacer"></div>
-
-            <div class="navbar-profile-container">
-                
-                <button id="navbar-profile-btn" class="navbar-profile-icon-btn" style="display: none;">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                        <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z" clip-rule="evenodd" />
-                    </svg>
-                </button>
-                
-                <div id="navbar-profile-dropdown" class="navbar-dropdown">
-                    <div class="dropdown-header">
-                        <div class="dropdown-header-label">Signed in as</div>
-                        <div class="dropdown-header-email" id="navbar-profile-email">...</div>
-                    </div>
-                    <div class="dropdown-divider"></div>
-                    <button id="navbar-logout-btn" class="dropdown-item dropdown-item-btn">
-                        Log Out
-                    </button>
-                </div>
+      <div class="nav-container">
+        <a href="index.html" class="logo"
+          ><span class="logo-icon">📊</span>DIGIPINE</a
+        >
+        <ul class="nav-links">
+          <li><a href="index.html">Home</a></li>
+          <li>
+            <a class="active" href="dashboard.html">Analytics Platform</a>
+          </li>
+          <li><a href="index.html#pricing">Pricing</a></li>
+          <li><a href="upload_new.html">Data Integration</a></li>
+        </ul>
+        <div class="nav-spacer"></div>
+        <div class="navbar-profile-container">
+          <button
+            id="navbar-profile-btn"
+            class="navbar-profile-icon-btn"
+            style="display: none"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-5.5-2.5a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0zM10 12a5.99 5.99 0 00-4.793 2.39A6.483 6.483 0 0010 16.5a6.483 6.483 0 004.793-2.11A5.99 5.99 0 0010 12z"
+                clip-rule="evenodd"
+              />
+            </svg>
+          </button>
+          <div id="navbar-profile-dropdown" class="navbar-dropdown">
+            <div class="dropdown-header">
+              <div class="dropdown-header-label">Signed in as</div>
+              <div class="dropdown-header-email" id="navbar-profile-email">
+                ...
+              </div>
             </div>
-            
+            <div class="dropdown-divider"></div>
+            <button
+              id="navbar-logout-btn"
+              class="dropdown-item dropdown-item-btn"
+            >
+              Log Out
+            </button>
+          </div>
         </div>
+      </div>
     </nav>
 
     <div class="dashboard-header">
-        <div class="container">
-            <div class="dashboard-title">
-                <h1>Market Intelligence Dashboard</h1>
-                <p>Real-time insights across quick-commerce platforms</p>
-            </div>
-            
-            <div class="platform-selector">
-                <div class="platform-tabs">
-                    <button class="platform-tab active" data-platform="all">All Platforms</button>
-                    <button class="platform-tab" data-platform="zepto">Zepto</button>
-                    <button class="platform-tab" data-platform="blinkit">Blinkit</button>
-                    <button class="platform-tab" data-platform="swiggy">Swiggy IM</button>
-                </div>
-            </div>
-            
-            <div class="filters-container">
-                <div class="filter-group">
-                    <label for="productFilter">Product Category:</label>
-                    <select id="productFilter" class="filter-select">
-                        <option value="all">All Categories</option>
-                        <option value="electronics">Electronics</option>
-                        <option value="groceries">Groceries</option>
-                        <option value="fashion">Fashion</option>
-                        <option value="beauty">Beauty & Personal Care</option>
-                        <option value="home">Home & Kitchen</option>
-                        <option value="food">Food & Beverages</option>
-                    </select>
-                </div>
-                
-                <div class="filter-group">
-                    <label for="regionFilter">Region:</label>
-                    <select id="regionFilter" class="filter-select">
-                        <option value="all">All Regions</option>
-                        <option value="mumbai">Mumbai</option>
-                        <option value="delhi">Delhi NCR</option>
-                        <option value="bangalore">Bangalore</option>
-                        <option value="hyderabad">Hyderabad</option>
-                        <option value="pune">Pune</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <label for="timeFilter">Time Range:</label>
-                    <select id="timeFilter" class="filter-select">
-                        <option value="24h">Last 24 Hours</option>
-                        <option value="7days" selected>Last 7 Days</option>
-                        <option value="30days">Last 30 Days</option>
-                        <option value="90days">Last 90 Days</option>
-                    </select>
-                </div>
-
-                <div class="filter-group">
-                    <button id="refreshDataBtn" class="refresh-button">
-                        <span class="button-icon">🔄</span> Refresh Data
-                    </button>
-                </div>
-            </div>
+      <div class="container">
+        <div class="dashboard-title">
+          <h1>Market Intelligence Dashboard</h1>
+          <p>Real-time insights across quick-commerce platforms</p>
         </div>
+
+        <div class="platform-selector">
+          <div class="platform-tabs">
+            <button class="platform-tab active" data-platform="all">
+              All Platforms
+            </button>
+            <button class="platform-tab" data-platform="zepto">Zepto</button>
+            <button class="platform-tab" data-platform="blinkit">
+              Blinkit
+            </button>
+            <button class="platform-tab" data-platform="swiggy">
+              Swiggy IM
+            </button>
+          </div>
+        </div>
+
+        <!-- Unified filters row -->
+        <div
+          class="filters-container"
+          style="display: flex; gap: 1.5rem; flex-wrap: wrap; align-items: end"
+        >
+          <!-- Category filter (kept) -->
+          <div class="filter-group">
+            <label for="productFilter">Product Category:</label>
+            <select id="productFilter" class="filter-select">
+              <option value="all">All Categories</option>
+              <option value="electronics">Electronics</option>
+              <option value="groceries">Groceries</option>
+              <option value="fashion">Fashion</option>
+              <option value="beauty">Beauty & Personal Care</option>
+              <option value="home">Home & Kitchen</option>
+              <option value="food">Food & Beverages</option>
+            </select>
+          </div>
+
+          <!-- Product selector -->
+          <div class="filter-group">
+            <label for="productSelector">Select Product:</label>
+            <select id="productSelector" class="filter-select">
+              <option value="cocacola">Coca Cola</option>
+              <option value="lays">Lays Chips</option>
+              <option value="dairymilk">Dairy Milk</option>
+              <option value="redbull">Red Bull</option>
+              <option value="nescafe">Nescafé</option>
+            </select>
+          </div>
+
+          <!-- Region -->
+          <div class="filter-group">
+            <label for="regionFilter">Region:</label>
+            <select id="regionFilter" class="filter-select">
+              <option value="all">All Regions</option>
+              <option value="mumbai">Mumbai</option>
+              <option value="delhi">Delhi NCR</option>
+              <option value="bangalore">Bengaluru</option>
+              <option value="hyderabad">Hyderabad</option>
+              <option value="pune">Pune</option>
+            </select>
+          </div>
+
+          <!-- Time range -->
+          <div class="filter-group">
+            <label for="timeFilter">Time Range:</label>
+            <select id="timeFilter" class="filter-select">
+              <option value="24h">Last 24 Hours</option>
+              <option value="7days" selected>Last 7 Days</option>
+              <option value="30days">Last 30 Days</option>
+              <option value="90days">Last 90 Days</option>
+            </select>
+          </div>
+
+          <!-- Refresh -->
+          <div class="filter-group">
+            <button id="refreshDataBtn" class="refresh-button">
+              <span class="button-icon">🔄</span> Refresh Data
+            </button>
+          </div>
+        </div>
+      </div>
     </div>
 
     <div class="dashboard-content">
-        <div class="container">
-            <div class="kpi-section">
-                <h2>Market Performance Overview</h2>
-                <div class="metrics-grid">
-                    <div class="metric-card trending">
-                        <div class="metric-header">
-                            <div class="metric-icon">📈</div>
-                            <div class="metric-trend positive">+12.5%</div>
-                        </div>
-                        <div class="metric-value" id="totalProducts">2,847</div>
-                        <div class="metric-label">Products Tracked</div>
-                        <div class="metric-detail">Across all platforms</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon">🎯</div>
-                            <div class="metric-trend positive">+8.3%</div>
-                        </div>
-                        <div class="metric-value" id="trendingProducts">247</div>
-                        <div class="metric-label">Trending Products</div>
-                        <div class="metric-detail">This week</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon">🏆</div>
-                            <div class="metric-trend neutral">-</div>
-                        </div>
-                        <div class="metric-value" id="topRegion">Mumbai North</div>
-                        <div class="metric-label">Top Performing Region</div>
-                        <div class="metric-detail">By sales velocity</div>
-                    </div>
-                    <div class="metric-card">
-                        <div class="metric-header">
-                            <div class="metric-icon">⚡</div>
-                            <div class="metric-trend positive">+15.7%</div>
-                        </div>
-                        <div class="metric-value" id="marketGrowth">23.4%</div>
-                        <div class="metric-label">Market Growth</div>
-                        <div class="metric-detail">QoQ growth rate</div>
-                    </div>
+      <div class="container">
+        <div class="kpi-section">
+          <h2>Market Performance Overview</h2>
+          <div class="metrics-grid">
+            <div class="metric-card trending">
+              <div class="metric-header">
+                <div class="metric-icon">📈</div>
+                <div class="metric-trend positive" id="kpiTrendBadge">
+                  +12.5%
                 </div>
+              </div>
+              <div class="metric-value" id="totalProducts">2,847</div>
+              <div class="metric-label">Products Tracked</div>
+              <div class="metric-detail">Across all platforms</div>
             </div>
-
-            <div class="analytics-grid">
-                <div class="analytics-card full-width">
-                    <div class="card-header">
-                        <h3>Regional Performance Heatmap</h3>
-                        <div class="card-actions">
-                            <select class="metric-selector">
-                                <option value="sales">Sales Volume</option>
-                                <option value="growth">Growth Rate</option>
-                                <option value="trending">Trending Score</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="map-container">
-                        <div id="performanceMap" class="performance-map"></div>
-                    </div>
-                </div>
-
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Platform Distribution</h3>
-                        <div class="card-info">Market share by platform</div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="platformChart"></canvas>
-                    </div>
-                    <div class="platform-stats">
-                        <div class="platform-stat">
-                            <div class="platform-indicator zepto"></div>
-                            <span class="platform-name">Zepto</span>
-                            <span class="platform-value">34.2%</span>
-                        </div>
-                        <div class="platform-stat">
-                            <div class="platform-indicator blinkit"></div>
-                            <span class="platform-name">Blinkit</span>
-                            <span class="platform-value">28.7%</span>
-                        </div>
-                        <div class="platform-stat">
-                            <div class="platform-indicator swiggy"></div>
-                            <span class="platform-name">Swiggy IM</span>
-                            <span class="platform-value">22.1%</span>
-                        </div>
-                        <div class="platform-stat">
-                            <div class="platform-indicator others"></div>
-                            <span class="platform-name">Others</span>
-                            <span class="platform-value">15.0%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Category Trends</h3>
-                        <div class="card-info">7-day trending categories</div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="categoryTrendChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Demand Forecasting</h3>
-                        <div class="card-info">AI-powered predictions</div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="demandForecastChart"></canvas>
-                    </div>
-                    <div class="forecast-insights">
-                        <div class="insight-item">
-                            <span class="insight-icon">📈</span>
-                            <span class="insight-text">Electronics demand +25% next week</span>
-                        </div>
-                        <div class="insight-item">
-                            <span class="insight-icon">🎯</span>
-                            <span class="insight-text">Fashion peak expected in 3 days</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="analytics-card full-width">
-                    <div class="card-header">
-                        <h3>Product Performance Timeline</h3>
-                        <div class="timeline-controls">
-                            <button class="timeline-btn active" data-metric="sales">Sales Volume</button>
-                            <button class="timeline-btn" data-metric="growth">Growth Rate</button>
-                            <button class="timeline-btn" data-metric="market-share">Market Share</button>
-                        </div>
-                    </div>
-                    <div class="chart-container large">
-                        <canvas id="timelineChart"></canvas>
-                    </div>
-                </div>
-
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Top Trending Products</h3>
-                        <div class="card-info">This week's winners</div>
-                    </div>
-                    <div class="trending-list">
-                        <div class="trending-item">
-                            <div class="trending-rank">1</div>
-                            <div class="trending-info">
-                                <div class="trending-name">iPhone 15 Pro</div>
-                                <div class="trending-category">Electronics</div>
-                            </div>
-                            <div class="trending-change positive">+45.2%</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-rank">2</div>
-                            <div class="trending-info">
-                                <div class="trending-name">Organic Bananas</div>
-                                <div class="trending-category">Groceries</div>
-                            </div>
-                            <div class="trending-change positive">+32.8%</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-rank">3</div>
-                            <div class="trending-info">
-                                <div class="trending-name">Nike Air Max</div>
-                                <div class="trending-category">Fashion</div>
-                            </div>
-                            <div class="trending-change positive">+28.5%</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-rank">4</div>
-                            <div class="trending-info">
-                                <div class="trending-name">Protein Powder</div>
-                                <div class="trending-category">Health</div>
-                            </div>
-                            <div class="trending-change positive">+24.1%</div>
-                        </div>
-                        <div class="trending-item">
-                            <div class="trending-rank">5</div>
-                            <div class="trending-info">
-                                <div class="trending-name">Smart Watch</div>
-                                <div class="trending-category">Electronics</div>
-                            </div>
-                            <div class="trending-change positive">+19.7%</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Market Alerts</h3>
-                        <div class="card-info">Real-time notifications</div>
-                    </div>
-                    <div class="alerts-list">
-                        <div class="alert-item high">
-                            <div class="alert-icon">🚨</div>
-                            <div class="alert-content">
-                                <div class="alert-title">Sudden Demand Spike</div>
-                                <div class="alert-desc">Gaming laptops up 67% in Bangalore</div>
-                                <div class="alert-time">2 mins ago</div>
-                            </div>
-                        </div>
-                        <div class="alert-item medium">
-                            <div class="alert-icon">⚠️</div>
-                            <div class="alert-content">
-                                <div class="alert-title">Inventory Alert</div>
-                                <div class="alert-desc">Low stock warning for beauty products</div>
-                                <div class="alert-time">15 mins ago</div>
-                            </div>
-                        </div>
-                        <div class="alert-item low">
-                            <div class="alert-icon">📊</div>
-                            <div class="alert-content">
-                                <div class="alert-title">Trend Update</div>
-                                <div class="alert-desc">Eco-friendly products gaining momentum</div>
-                                <div class="alert-time">1 hour ago</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Delivery Performance</h3>
-                        <div class="card-actions">
-                            <select class="time-range-select">
-                                <option value="24h">24 Hours</option>
-                                <option value="7d" selected>7 Days</option>
-                                <option value="30d">30 Days</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="chart-container">
-                        <canvas id="deliveryTimeTrendChart"></canvas>
-                    </div>
-                    <div class="delivery-stats">
-                        <div class="stat-item">
-                            <span class="stat-label">Avg. Time</span>
-                            <span class="stat-value" id="avgDeliveryTime">13.2 min</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">On-Time Rate</span>
-                            <span class="stat-value" id="onTimeRate">94.5%</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Fraud Analysis</h3>
-                        <div class="card-info">Delivery verification stats</div>
-                    </div>
-                    <div class="chart-container fraud-chart">
-                        <canvas id="fraudPieChart"></canvas>
-                    </div>
-                    <div class="fraud-stats">
-                        <div class="stat-group verified">
-                            <div class="stat-label">Verified Deliveries</div>
-                            <div class="stat-value" id="verifiedCount">2,847</div>
-                        </div>
-                        <div class="stat-group flagged">
-                            <div class="stat-label">Flagged for Review</div>
-                            <div class="stat-value" id="flaggedCount">73</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="analytics-card">
-                    <div class="card-header">
-                        <h3>Latest Alerts</h3>
-                        <div class="card-info">Real-time updates</div>
-                    </div>
-                    <div class="alerts-list" id="alertsList">
-                        <!-- Alerts will be populated by JavaScript -->
-                    </div>
-                </div>
-
-                <!-- Replace the broken section with this organized layout -->
-                <div class="analytics-card full-width">
-                    <div class="card-header">
-                        <h3>Zone Performance Details</h3>
-                        <div class="card-info">Real-time zone metrics</div>
-                    </div>
-                    <div class="zone-details">
-                        <div class="zone-grid">
-                            <div class="zone-item">
-                                <div class="zone-header">
-                                    <span class="zone-code">AB12-34CD</span>
-                                    <span class="zone-badge success">Active</span>
-                                </div>
-                                <div class="zone-stats">
-                                    <div class="stat-item">
-                                        <span class="stat-label">Orders</span>
-                                        <span class="stat-value">652</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Avg Time</span>
-                                        <span class="stat-value">11.3 min</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Top Category</span>
-                                        <span class="stat-value">Electronics</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="zone-item">
-                                <div class="zone-header">
-                                    <span class="zone-code">XY45-78ZT</span>
-                                    <span class="zone-badge warning">Review</span>
-                                </div>
-                                <div class="zone-stats">
-                                    <div class="stat-item">
-                                        <span class="stat-label">Orders</span>
-                                        <span class="stat-value">738</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Avg Time</span>
-                                        <span class="stat-value">13.2 min</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Top Category</span>
-                                        <span class="stat-value">Groceries</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="zone-item">
-                                <div class="zone-header">
-                                    <span class="zone-code">PQ99-12AA</span>
-                                    <span class="zone-badge danger">Critical</span>
-                                </div>
-                                <div class="zone-stats">
-                                    <div class="stat-item">
-                                        <span class="stat-label">Orders</span>
-                                        <span class="stat-value">457</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Avg Time</span>
-                                        <span class="stat-value">14.8 min</span>
-                                    </div>
-                                    <div class="stat-item">
-                                        <span class="stat-label">Top Category</span>
-                                        <span class="stat-value">Food & Beverage</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Rest of the analytics cards -->
+            <div class="metric-card">
+              <div class="metric-header">
+                <div class="metric-icon">🎯</div>
+                <div class="metric-trend positive">+8.3%</div>
+              </div>
+              <div class="metric-value" id="trendingProducts">247</div>
+              <div class="metric-label">Trending Products</div>
+              <div class="metric-detail">This week</div>
             </div>
+            <div class="metric-card">
+              <div class="metric-header">
+                <div class="metric-icon">🏆</div>
+                <div class="metric-trend neutral">-</div>
+              </div>
+              <div class="metric-value" id="topRegion">Mumbai North</div>
+              <div class="metric-label">Top Performing Region</div>
+              <div class="metric-detail">By sales velocity</div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-header">
+                <div class="metric-icon">⚡</div>
+                <div class="metric-trend positive">+15.7%</div>
+              </div>
+              <div class="metric-value" id="marketGrowth">23.4%</div>
+              <div class="metric-label">Market Growth</div>
+              <div class="metric-detail">QoQ growth rate</div>
+            </div>
+          </div>
         </div>
+
+        <div class="analytics-grid">
+          <!-- Heatmap (KEEP YOURS) -->
+          <div class="analytics-card full-width">
+            <div class="card-header">
+              <h3>Regional Performance Heatmap</h3>
+              <div class="card-actions">
+                <select class="metric-selector" id="mapMetric">
+                  <option value="sales">Sales Volume</option>
+                  <option value="growth">Growth Rate</option>
+                  <option value="trending">Trending Score</option>
+                </select>
+              </div>
+            </div>
+            <div class="map-container">
+              <div id="performanceMap" class="performance-map"></div>
+            </div>
+          </div>
+
+          <!-- Platform Distribution -->
+          <div class="analytics-card">
+            <div class="card-header">
+              <h3>Platform Distribution</h3>
+              <div class="card-info">Market share by platform</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="platformChart"></canvas>
+            </div>
+            <div class="platform-stats">
+              <div class="platform-stat">
+                <div class="platform-indicator zepto"></div>
+                <span class="platform-name">Zepto</span>
+                <span class="platform-value" id="plt-zepto">34.2%</span>
+              </div>
+              <div class="platform-stat">
+                <div class="platform-indicator blinkit"></div>
+                <span class="platform-name">Blinkit</span>
+                <span class="platform-value" id="plt-blinkit">28.7%</span>
+              </div>
+              <div class="platform-stat">
+                <div class="platform-indicator swiggy"></div>
+                <span class="platform-name">Swiggy IM</span>
+                <span class="platform-value" id="plt-swiggy">22.1%</span>
+              </div>
+              <div class="platform-stat">
+                <div class="platform-indicator others"></div>
+                <span class="platform-name">Others</span>
+                <span class="platform-value" id="plt-others">15.0%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order requested: Category Trends, Demand Forecasting BEFORE competitor analysis -->
+          <div class="analytics-card">
+            <div class="card-header">
+              <h3>Category Trends</h3>
+              <div class="card-info">7-day trending categories</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="categoryTrendChart"></canvas>
+            </div>
+          </div>
+
+          <div class="analytics-card">
+            <div class="card-header">
+              <h3>Demand Forecasting</h3>
+              <div class="card-info">AI-powered predictions</div>
+            </div>
+            <div class="chart-container">
+              <canvas id="demandForecastChart"></canvas>
+            </div>
+            <div class="forecast-insights" id="forecastInsights"></div>
+          </div>
+
+          <!-- Competitor (kept simple list) -->
+          <div class="analytics-card full-width">
+            <div class="card-header">
+              <h3>Competitor Strategy Analysis</h3>
+            </div>
+            <div
+              class="chart-container"
+              style="padding: 1.5rem; min-height: 200px"
+            >
+              <div
+                class="competitor-list"
+                style="
+                  display: flex;
+                  flex-direction: column;
+                  gap: 1rem;
+                  width: 100%;
+                "
+              ></div>
+            </div>
+          </div>
+
+          <!-- AFTER competitor: partner blocks -->
+
+          <!-- Product Performance Timeline -->
+          <div class="analytics-card full-width">
+            <div class="card-header">
+              <h3>Product Performance Timeline</h3>
+              <div class="timeline-controls">
+                <button class="timeline-btn active" data-metric="sales">
+                  Sales Volume
+                </button>
+                <button class="timeline-btn" data-metric="growth">
+                  Growth Rate
+                </button>
+                <button class="timeline-btn" data-metric="market-share">
+                  Market Share
+                </button>
+              </div>
+            </div>
+            <div class="chart-container large">
+              <canvas id="timelineChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Delivery Performance (partner) -->
+          <div class="analytics-card">
+            <div class="card-header">
+              <h3>Delivery Performance</h3>
+              <div class="card-actions">
+                <select class="time-range-select" id="deliveryRange">
+                  <option value="24h">24 Hours</option>
+                  <option value="7d" selected>7 Days</option>
+                  <option value="30d">30 Days</option>
+                </select>
+              </div>
+            </div>
+            <div class="chart-container">
+              <canvas id="deliveryTimeTrendChart"></canvas>
+            </div>
+            <div class="delivery-stats">
+              <div class="stat-item">
+                <span class="stat-label">Avg. Time</span>
+                <span class="stat-value" id="avgDeliveryTime">13.2 min</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-label">On-Time Rate</span>
+                <span class="stat-value" id="onTimeRate">94.5%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fraud Analysis (partner) -->
+          <div class="analytics-card">
+            <div class="card-header">
+              <h3>Fraud Analysis</h3>
+              <div class="card-info">Delivery verification stats</div>
+            </div>
+            <div class="chart-container fraud-chart">
+              <canvas id="fraudPieChart"></canvas>
+            </div>
+            <div class="fraud-stats">
+              <div class="stat-group verified">
+                <div class="stat-label">Verified Deliveries</div>
+                <div class="stat-value" id="verifiedCount">2,847</div>
+              </div>
+              <div class="stat-group flagged">
+                <div class="stat-label">Flagged for Review</div>
+                <div class="stat-value" id="flaggedCount">73</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Zone Performance (partner redesigned) -->
+          <div class="analytics-card full-width zone-performance-card">
+            <div class="card-header">
+              <h3>Zone Performance Details</h3>
+              <div class="card-info">Real-time zone metrics</div>
+            </div>
+
+            <div class="zone-flex-row">
+              <div class="zone-card">
+                <div class="zone-card-left">
+                  <div class="zone-code">AB12-34CD</div>
+                  <div class="zone-stats-row">
+                    <div class="zone-stat-block">
+                      <div class="zone-stat-label">ORDERS</div>
+                      <div class="zone-stat-value">652</div>
+                    </div>
+                    <div class="zone-stat-block">
+                      <div class="zone-stat-label">AVG TIME</div>
+                      <div class="zone-stat-value">11.3 min</div>
+                    </div>
+                    <div class="zone-stat-block">
+                      <div class="zone-stat-label">TOP CATEGORY</div>
+                      <div class="zone-stat-value">Electronics</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="zone-card-right">
+                  <span class="zone-status-badge success">Active</span>
+                </div>
+              </div>
+
+              <div class="zone-card">
+                <div class="zone-card-left">
+                  <div class="zone-code">XY45-78ZT</div>
+                  <div class="zone-stats-row">
+                    <div class="zone-stat-block">
+                      <div class="zone-stat-label">ORDERS</div>
+                      <div class="zone-stat-value">738</div>
+                    </div>
+                    <div class="zone-stat-block">
+                      <div class="zone-stat-label">AVG TIME</div>
+                      <div class="zone-stat-value">13.2 min</div>
+                    </div>
+                    <div class="zone-stat-block">
+                      <div class="zone-stat-label">TOP CATEGORY</div>
+                      <div class="zone-stat-value">Groceries</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="zone-card-right">
+                  <span class="zone-status-badge warning">Review</span>
+                </div>
+              </div>
+
+              <div class="zone-card">
+                <div class="zone-card-left">
+                  <div class="zone-code">PQ99-12AA</div>
+                  <div class="zone-stats-row">
+                    <div class="zone-stat-block">
+                      <div class="zone-stat-label">ORDERS</div>
+                      <div class="zone-stat-value">457</div>
+                    </div>
+                    <div class="zone-stat-block">
+                      <div class="zone-stat-label">AVG TIME</div>
+                      <div class="zone-stat-value">14.8 min</div>
+                    </div>
+                    <div class="zone-stat-block">
+                      <div class="zone-stat-label">TOP CATEGORY</div>
+                      <div class="zone-stat-value">Food & Beverage</div>
+                    </div>
+                  </div>
+                </div>
+                <div class="zone-card-right">
+                  <span class="zone-status-badge danger">Critical</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Latest Alerts (partner) -->
+          <div class="analytics-card">
+            <div class="card-header">
+              <h3>Latest Alerts</h3>
+              <div class="card-info">Real-time updates</div>
+            </div>
+            <div class="alerts-list" id="alertsList"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
     <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-section">
-                    <div class="footer-logo">
-                        <span class="logo-icon">📊</span>
-                        DIGIPINE
-                    </div>
-                    <p>Empowering businesses with market intelligence for quick-commerce success.</p>
-                </div>
-                <div class="footer-section">
-                    <h4>Platform</h4>
-                    <ul>
-                        <li><a href="dashboard.html">Analytics Dashboard</a></li>
-                        <li><a href="upload_new.html">Data Integration</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Solutions</h4>
-                    <ul>
-                        <li><a href="#">Trend Analysis</a></li>
-                        <li><a href="#">Regional Insights</a></li>
-                        <li><a href="#">Competitive Intelligence</a></li>
-                    </ul>
-                </div>
-                <div class="footer-section">
-                    <h4>Contact</h4>
-                    <ul>
-                        <li>Email: hello@digipine.com</li>
-                        <li>Phone: +91 98765 43210</li>
-                        <li>Support: support@digipine.com</li>
-                    </ul>
-                </div>
+      <div class="container">
+        <div class="footer-content">
+          <div class="footer-section">
+            <div class="footer-logo">
+              <span class="logo-icon">📊</span>DIGIPINE
             </div>
-            <div class="footer-bottom">
-                <p>&copy; 2025 DIGIPINE. All rights reserved.</p>
-            </div>
+            <p>
+              Empowering businesses with market intelligence for quick-commerce
+              success.
+            </p>
+          </div>
+          <div class="footer-section">
+            <h4>Platform</h4>
+            <ul>
+              <li><a href="dashboard.html">Analytics Dashboard</a></li>
+              <li><a href="upload_new.html">Data Integration</a></li>
+              <li><a href="index.html#pricing">Pricing Plans</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Solutions</h4>
+            <ul>
+              <li><a href="#">Trend Analysis</a></li>
+              <li><a href="#">Regional Insights</a></li>
+              <li><a href="#">Competitive Intelligence</a></li>
+            </ul>
+          </div>
+          <div class="footer-section">
+            <h4>Contact</h4>
+            <ul>
+              <li>Email: hello@digipine.com</li>
+              <li>Phone: +91 98765 43210</li>
+              <li>Support: support@digipine.com</li>
+            </ul>
+          </div>
         </div>
+        <div class="footer-bottom">
+          <p>&copy; 2025 DIGIPINE. All rights reserved.</p>
+        </div>
+      </div>
     </footer>
 
+    <!-- Scripts: our unified data engine + partner integration -->
     <script src="market_dashboard.js"></script>
-    <script>
-        // Smooth page transitions
-        document.querySelectorAll('a[href]').forEach(link => {
-            link.addEventListener('click', function(e) {
-                const href = this.getAttribute('href');
-                
-                // Only animate for internal page navigation
-                if (href.endsWith('.html') && !href.includes('#')) {
-                    e.preventDefault();
-                    document.body.classList.add('page-exit');
-                    
-                    setTimeout(() => {
-                        window.location.href = href;
-                    }, 300);
-                }
-            });
-        });
-    </script>
     <script src="dashboard_integration.js"></script>
-
     <script type="module" src="auth/auth-check.js"></script>
-
-</body>
+  </body>
 </html>
